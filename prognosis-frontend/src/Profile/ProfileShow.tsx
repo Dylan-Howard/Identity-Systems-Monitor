@@ -19,14 +19,13 @@ import {
   Chip,
   Typography,
 } from "@mui/material";
-// import WarningIcon from '@mui/icons-material/Warning';
 import { ProfileShowActions } from './ProfileShowActions';
 import { ProfilePhoto } from '../Modules/ProfilePhoto';
 import { ProfileSkeleton } from '../Skeleton/ProfileSkeleton';
 import { ProBreadcrumbs } from '../Modules/ProBreadcrumbs';
 import { ProfileShowCardActions } from './ProfileShowCardActions';
 
-const ProfileShowCard = ({ title, data, columns }: { title: string, data: any[], columns: number }) => {
+const ProfileShowCard = ({ title, data, columns, system }: { title: string, data: any[], columns: number, system: string }) => {
 
   const fields = [];
   for (let i = 0; i < columns; i += 1) {
@@ -46,7 +45,7 @@ const ProfileShowCard = ({ title, data, columns }: { title: string, data: any[],
     <Card sx={{ p: 2, mb: 2 }}>
       <Stack direction="row" justifyContent="space-between" spacing={2}>
         <Typography variant="h2" fontSize={18} fontWeight={600} gutterBottom>{title}</Typography>
-        <ProfileShowCardActions />
+        <ProfileShowCardActions system={system} />
       </Stack>
       
       <Grid container spacing={2}>
@@ -84,8 +83,10 @@ const ProfileShowLayout = () => {
   const photoUrl = record.links ? record.links.map((lnk: any) => lnk.photoUrl).pop() : '';
 
   const isError = {
-    claimFlag: !record.status,
-    isActive: !record.status,
+    unclaimed: !record.claimed,
+    disabled: !record.status,
+    locked: record.locked,
+    noMfa: record.mfaMethod === 'None',
   };
 
   return (
@@ -125,18 +126,34 @@ const ProfileShowLayout = () => {
                     <BooleanField source="status" emptyText="not defined" />
                   </Labeled>
                   {
-                    isError.isActive ? <Chip color="error" size="small" label="Warning" /> : ''
+                    isError.disabled ? <Chip color="error" size="small" label="Warning" /> : ''
                   }
                 </Stack>
                 <Stack direction="row" spacing={2}>
                   <Labeled label="Claim Flag">
-                    <BooleanField source="idautoPersonClaimFlag" emptyText="not defined" />
+                    <BooleanField source="claimed" />
                   </Labeled>
                   {
-                    isError.claimFlag ? <Chip color="error" size="small" label="Warning" /> : ''
+                    isError.unclaimed ? <Chip color="error" size="small" label="Warning" /> : ''
                   }
                 </Stack>
-                <Labeled label="Primary Location" fullWidth>
+                <Stack direction="row" spacing={2}>
+                  <Labeled label="Locked">
+                    <BooleanField source="locked" />
+                  </Labeled>
+                  {
+                    isError.locked ? <Chip color="error" size="small" label="Warning" /> : ''
+                  }
+                </Stack>
+                <Stack direction="row" spacing={2}>
+                  <Labeled label="MFA Method">
+                    <TextField source="mfaMethod" />
+                  </Labeled>
+                  {
+                    isError.noMfa ? <Chip color="error" size="small" label="Warning" /> : ''
+                  }
+                </Stack>
+                {/* <Labeled label="Primary Location" fullWidth>
                   <FunctionField
                     source="idautoPersonLocCodes"
                     render={
@@ -150,7 +167,7 @@ const ProfileShowLayout = () => {
                       )
                     }
                   />
-                </Labeled>
+                </Labeled> */}
                 <Labeled label="Pending Rename" fullWidth>
                   <TextField source="idautoPersonRenameUsername" emptyText="not defined" />
                 </Labeled>
@@ -165,7 +182,13 @@ const ProfileShowLayout = () => {
           {
             record.links && record.links.length !== 0
               ? record.links.map((lnk: any) => (
-                <ProfileShowCard key={lnk.serviceName} title={`Linked Account: ${lnk.serviceName}`} data={lnk.linkedAccount} columns={2} />
+                <ProfileShowCard
+                  key={lnk.serviceName}
+                  title={`Linked Account: ${lnk.serviceName}`}
+                  data={lnk.linkedAccount}
+                  columns={2}
+                  system={lnk.serviceName}
+                />
               ))
               : ''
           }

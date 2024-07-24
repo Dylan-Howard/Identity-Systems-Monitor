@@ -16,13 +16,13 @@ import UserIcon from '@mui/icons-material/Group';
 // import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 
 import { iamTheme } from './Theme'
-import { proDataProvider } from './Data/proDataProvider';
+// import { proDataProvider } from './Data/proDataProvider';
 
 export const App = () => (
   <Admin
     authProvider={authProvider}
     // @ts-ignore 
-    dataProvider={proDataProvider}
+    dataProvider={dataProvider}
     dashboard={Dashboard}
     defaultTheme='light'
     theme={iamTheme}

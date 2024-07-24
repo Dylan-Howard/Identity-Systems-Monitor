@@ -1,8 +1,6 @@
 import { fetchUtils } from 'react-admin';
 
 const actionsApiUrl = import.meta.env.VITE_ACTION_SERVER_URL;
-const actionsAuthUsername = import.meta.env.VITE_ACTION_SERVER_AUTH_USERNAME;
-const actionsAuthPassword = import.meta.env.VITE_ACTION_SERVER_AUTH_PASSWORD;
 
 export const fetchData = async (url: string, options: fetchUtils.Options = {}) => {
   if (url.substring(0, actionsApiUrl.length) === actionsApiUrl) {
