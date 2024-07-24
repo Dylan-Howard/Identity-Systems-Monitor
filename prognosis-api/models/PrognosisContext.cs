@@ -12,10 +12,10 @@ public class PrognosisContext : DbContext
     }
 
     public DbSet<Service> Services { get; set; } = default!;
-
     public DbSet<Profile> Profiles { get; set; } = default!;
-
     public DbSet<Agent> Agents { get; set; } = default!;
     public DbSet<Total> Totals { get; set; } = default!;
     public DbSet<Link> Links { get; set; } = default!;
+    public DbSet<Job> Jobs { get; set; } = default!;
+    public DbSet<Task> Tasks { get; set; } = default!;
 }

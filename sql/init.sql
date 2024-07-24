@@ -47,6 +47,10 @@ VALUES
   ( NEWID(), @RapidIdentityGUID, 2292, '2024-06-29 02:00:00'),
   ( NEWID(), @RapidIdentityGUID, 3836, '2024-06-30 02:00:00')
 
+INSERT INTO [master].[dbo].[job]
+VALUES
+  ( NEWID(), @RapidIdentityGUID, '2024-07-01 00:00:00', '2024-07-01 17:00:00', 15, 1)
+
 DECLARE @GoogleGUID UNIQUEIDENTIFIER = (
   SELECT TOP(1) srv.service_id
   FROM [service] srv
@@ -85,6 +89,10 @@ VALUES
   ( NEWID(), @GoogleGUID, 3571, '2024-06-28 02:00:00'),
   ( NEWID(), @GoogleGUID, 2292, '2024-06-29 02:00:00'),
   ( NEWID(), @GoogleGUID, 3836, '2024-06-30 02:00:00')
+
+INSERT INTO [master].[dbo].[job]
+VALUES
+  ( NEWID(), @GoogleGUID, '2024-07-01 00:00:00', '2024-07-01 17:00:00', 15, 1)
 
 DECLARE @EntraGUID UNIQUEIDENTIFIER = (
   SELECT TOP(1) srv.service_id
@@ -125,6 +133,10 @@ VALUES
   ( NEWID(), @EntraGUID, 2292, '2024-06-29 02:00:00'),
   ( NEWID(), @EntraGUID, 3836, '2024-06-30 02:00:00')
 
+INSERT INTO [master].[dbo].[job]
+VALUES
+  ( NEWID(), @EntraGUID, '2024-07-01 00:00:00', '2024-07-01 17:00:00', 15, 1)
+
 DECLARE @ActiveDirectoryGUID UNIQUEIDENTIFIER = (
   SELECT TOP(1) srv.service_id
   FROM [service] srv
@@ -163,6 +175,10 @@ VALUES
   ( NEWID(), @ActiveDirectoryGUID, 3571, '2024-06-28 02:00:00'),
   ( NEWID(), @ActiveDirectoryGUID, 2292, '2024-06-29 02:00:00'),
   ( NEWID(), @ActiveDirectoryGUID, 3836, '2024-06-30 02:00:00')
+
+INSERT INTO [master].[dbo].[job]
+VALUES
+  ( NEWID(), @ActiveDirectoryGUID, '2024-07-01 00:00:00', '2024-07-01 17:00:00', 15, 1)
 
 /* Inserts agent data */
 INSERT INTO [agent]
