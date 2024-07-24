@@ -11,47 +11,51 @@ namespace prognosis.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TasksController : ControllerBase
+    public class JobsController : ControllerBase
     {
         private readonly PrognosisContext _context;
 
-        public TasksController(PrognosisContext context)
+        public JobsController(PrognosisContext context)
         {
             _context = context;
         }
 
-        // GET: api/Tasks
+        // GET: api/Jobs
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Prognosis.Models.Task>>> GetTask()
+        public async Task<ActionResult<JobList>> GetJob()
         {
-            return await _context.Tasks.ToListAsync();
+            List<Job> jobs = await _context.Jobs.ToListAsync();
+            return new JobList {
+              Jobs = jobs,
+              Total = jobs.Count,
+            };
         }
 
-        // GET: api/Tasks/5
+        // GET: api/Jobs/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Prognosis.Models.Task>> GetTask(Guid id)
+        public async Task<ActionResult<Job>> GetJob(Guid id)
         {
-            var Task = await _context.Tasks.FindAsync(id);
+            var Job = await _context.Jobs.FindAsync(id);
 
-            if (Task == null)
+            if (Job == null)
             {
                 return NotFound();
             }
 
-            return Task;
+            return Job;
         }
 
-        // PUT: api/Tasks/5
+        // PUT: api/Jobs/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTask(Guid id, Prognosis.Models.Task Task)
+        public async Task<IActionResult> PutJob(Guid id, Job Job)
         {
-            if (id != Task.TaskId)
+            if (id != Job.JobId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(Task).State = EntityState.Modified;
+            _context.Entry(Job).State = EntityState.Modified;
 
             try
             {
@@ -59,7 +63,7 @@ namespace prognosis.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!TaskExists(id))
+                if (!JobExists(id))
                 {
                     return NotFound();
                 }
@@ -72,36 +76,36 @@ namespace prognosis.Controllers
             return NoContent();
         }
 
-        // POST: api/Tasks
+        // POST: api/Jobs
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Prognosis.Models.Task>> PostTask(Prognosis.Models.Task Task)
+        public async Task<ActionResult<Job>> PostJob(Job Job)
         {
-            _context.Tasks.Add(Task);
+            _context.Jobs.Add(Job);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(PostTask), new { id = Guid.NewGuid() }, Task);
+            return CreatedAtAction(nameof(PostJob), new { id = Guid.NewGuid() }, Job);
         }
 
-        // DELETE: api/Tasks/5
+        // DELETE: api/Jobs/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTask(Guid id)
+        public async Task<IActionResult> DeleteJob(Guid id)
         {
-            var Task = await _context.Tasks.FindAsync(id);
-            if (Task == null)
+            var Job = await _context.Jobs.FindAsync(id);
+            if (Job == null)
             {
                 return NotFound();
             }
 
-            _context.Tasks.Remove(Task);
+            _context.Jobs.Remove(Job);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool TaskExists(Guid id)
+        private bool JobExists(Guid id)
         {
-            return _context.Tasks.Any(e => e.TaskId == id);
+            return _context.Jobs.Any(e => e.JobId == id);
         }
     }
 }

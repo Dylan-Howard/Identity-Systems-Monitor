@@ -12,7 +12,7 @@ public class Job
     [JsonPropertyName("id")]
     public Guid JobId { get; set; }
     [Column("service_id")]
-    [JsonPropertyName("serviceid")]
+    [JsonPropertyName("serviceId")]
     public Guid ServiceId { get; set; }
     [Column("start_date")]
     [JsonPropertyName("startDate")]

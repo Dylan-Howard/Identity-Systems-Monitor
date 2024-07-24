@@ -16,3 +16,12 @@ public class Agent
     [Column("password")]
     public required string Password { get; set; }
 }
+
+public class AgentList
+{
+    [Key]
+    [JsonPropertyName("data")]
+    public required List<Agent> Agents { get; set; }
+    [JsonPropertyName("total")]
+    public int Total { get; set; }
+}

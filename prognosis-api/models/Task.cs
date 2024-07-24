@@ -11,9 +11,9 @@ public class Task
     [Column("task_id")]
     [JsonPropertyName("id")]
     public Guid TaskId { get; set; }
-    [Column("service_id")]
-    [JsonPropertyName("serviceid")]
-    public Guid ServiceId { get; set; }
+    [Column("job_id")]
+    [JsonPropertyName("jobId")]
+    public Guid JobId { get; set; }
     [Column("start_time")]
     [JsonPropertyName("startTime")]
     public DateTime StartTime { get; set; }
@@ -26,4 +26,13 @@ public class Task
     [Column("active")]
     [JsonPropertyName("active")]
     public bool Active { get; set; }
+}
+
+public class TaskList
+{
+    [Key]
+    [JsonPropertyName("data")]
+    public required List<Task> Tasks { get; set; }
+    [JsonPropertyName("total")]
+    public int Total { get; set; }
 }

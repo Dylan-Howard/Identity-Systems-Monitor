@@ -1,22 +1,20 @@
 import { Admin, Resource, ListGuesser, ShowGuesser } from 'react-admin';
 import { authProvider } from './authProvider';
 import { dataProvider } from './dataProvider';
-// import { UserList } from './User/UserList';
-// import { UserShow } from './User/UserShow';
 // import { RenameList } from './Rename/RenameList';
 import { Dashboard } from './Dashboard';
 import { ServiceList } from './Service/ServiceList';
 import { ProfileList } from './Profile/ProfileList';
 import { ProfileShow } from './Profile/ProfileShow';
-// import { ChangeList } from './Change/ChangeList';
 
 import CloudIcon from '@mui/icons-material/Cloud';
-// import NumbersIcon from '@mui/icons-material/Numbers';
 import UserIcon from '@mui/icons-material/Group';
-// import SupportAgentIcon from '@mui/icons-material/SupportAgent';
+import TaskIcon from '@mui/icons-material/Task';
+import WorkIcon from '@mui/icons-material/Work';
+import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 
 import { iamTheme } from './Theme'
-// import { proDataProvider } from './Data/proDataProvider';
+import { JobList } from './Job/JobList';
 
 export const App = () => (
   <Admin
@@ -39,26 +37,23 @@ export const App = () => (
       show={ProfileShow}
       icon={UserIcon}
     />
-    {/* <Resource
-      name="users"
-      list={UserList}
-      show={UserShow}
-      recordRepresentation="mail"
-      icon={UserIcon}
+    <Resource
+      name="jobs"
+      list={JobList}
+      show={ShowGuesser}
+      icon={WorkIcon}
     />
     <Resource
-      name="changes"
-      list={ChangeList}
-      icon={ChangeCircleIcon}
+      name="tasks"
+      list={ListGuesser}
+      show={ShowGuesser}
+      icon={TaskIcon}
     />
     <Resource
-      name="renames"
-      list={RenameList}
-      icon={AbcIcon}
-    /> */}
-    {/* <Resource
-      name="alerts"
-      list={AlertList}
-    /> */}
+      name="agents"
+      list={ListGuesser}
+      show={ShowGuesser}
+      icon={SupportAgentIcon}
+    />
   </Admin>
 );

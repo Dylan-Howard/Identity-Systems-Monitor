@@ -22,9 +22,13 @@ namespace prognosis.Controllers
 
         // GET: api/Agents
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Agent>>> GetAgent()
+        public async Task<ActionResult<AgentList>> GetAgent()
         {
-            return await _context.Agents.ToListAsync();
+            List<Agent> agents = await _context.Agents.ToListAsync();
+            return new AgentList {
+              Agents = agents,
+              Total = agents.Count,
+            };
         }
 
         // GET: api/Agents/5
