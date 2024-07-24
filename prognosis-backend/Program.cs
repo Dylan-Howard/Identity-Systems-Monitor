@@ -1,0 +1,99 @@
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using prognosis_backend.models;
+using prognosis_backend;
+using Microsoft.Extensions.DependencyInjection;
+
+async System.Threading.Tasks.Task RunAsync(IConfiguration configuration)
+{
+  Console.WriteLine("Beginning sync tasks");
+
+  try
+  {
+    Console.WriteLine("Fetching Profiles from DB");
+
+    string? proUrl = configuration.GetValue<string>("Connections:Prognosis:Url");
+    string? proUser = configuration.GetValue<string>("Connections:Prognosis:Username");
+    string? proPassword = configuration.GetValue<string>("Connections:Prognosis:Password");
+    if (proUrl == null || proUser == null || proPassword == null)
+    {
+        Console.WriteLine("Unable to load connection settings for Prognosis Database");
+        return;
+    }
+
+    PrognosisConnectionSettings proConnectionSettings = new PrognosisConnectionSettings {
+      Url = proUrl,
+      Username = proUser,
+      Password = proPassword,
+    };
+
+    List<Profile> profiles = await SyncManager.FetchProfileRecords(proConnectionSettings, 3);
+
+    if (profiles.Count < 1)
+    {
+      Console.WriteLine("Sync encountered an error!");
+      return;
+    }
+
+    /* Example fetch and process for Rapid Identity */
+    Console.WriteLine("Fetching Users from Rapid Identity");
+
+    string? riUrl = configuration.GetValue<string>("Connections:RapidIdentity:ApiUrl");
+    string? riUser = configuration.GetValue<string>("Connections:RapidIdentity:Username");
+    string? riPassword = configuration.GetValue<string>("Connections:RapidIdentity:Password");
+    if (riUrl == null || riUser == null || riPassword == null)
+    {
+        Console.WriteLine("Unable to load connection settings for Rapid Identity");
+        return;
+    }
+
+    RapidIdentityConnectionSettings riConnectionSettings = new RapidIdentityConnectionSettings {
+      Url = riUrl,
+      Username = riUser,
+      Password = riPassword,
+    };
+
+    bool riSyncSuccessful = await SyncManager.SyncRapidIdentity(proConnectionSettings, riConnectionSettings, profiles);
+
+    if (riSyncSuccessful)
+    {
+      Console.WriteLine("Sync succeeded!");
+    }
+    else
+    {
+      Console.WriteLine("Sync encountered an error!");
+      return;
+    }
+
+    /* Example fetch and process for Rapid Identity */
+    Console.WriteLine("Fetching Links from Google");
+    bool googleSyncSuccessful = await SyncManager.SyncGoogle(proConnectionSettings);
+
+    if (googleSyncSuccessful)
+    {
+      Console.WriteLine("Log succeeded!");
+    }
+    else
+    {
+      Console.WriteLine("Log encountered an error!");
+      return;
+    }
+
+    Console.WriteLine("Sync tasks finished");
+  }
+  catch (Exception e)
+  {
+    Console.WriteLine(e.Message);
+  }
+
+  Console.ReadLine();
+}
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+builder.Services.AddControllers();
+
+var configuration = builder.Configuration;
+
+RunAsync(configuration).GetAwaiter().GetResult();

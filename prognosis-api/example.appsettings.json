@@ -1,0 +1,12 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+  "ConnectionStrings": {
+    "PrognosisContext": "Server=192.168.1.1; Initial Catalog=master; User Id=username; Password=password; ConnectRetryCount=2; Encrypt=False;"
+  }
+}

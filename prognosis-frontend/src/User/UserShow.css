@@ -1,0 +1,36 @@
+.UserShow li,
+.UserShow .UserShowCard .UserShowFieldValue {
+  font-size: 0.875rem;
+  /* font-size: 1rem; */
+}
+/* 
+.UserShow .UserShowCard .UserShowFieldLabel {
+  font-size: .75rem;
+} */
+
+.UserShow > h1.UserShowTypography {
+  font-size: 2rem;
+}
+
+.UserShow > h2.UserShowTypography {
+  font-size: 1.8rem;
+}
+
+.UserShow ul {
+  padding-left: 1rem;
+  margin: 0;
+}
+
+.UserShowCard {
+  padding: 1rem 2rem;
+}
+
+.UserCardActionBar {
+  padding: 1rem 0;
+}
+
+.UserProfileLabel .ErrorTag {
+  background-color: red;
+  color: white;
+  padding: 4px 8px;
+}

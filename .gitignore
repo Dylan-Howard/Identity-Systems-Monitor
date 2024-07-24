@@ -1,0 +1,17 @@
+.DS_Store
+
+packages/
+bin/
+obj/
+
+# *.sln
+# *.csproj
+*.proj.json
+.env
+
+appsettings.json
+credentials.json
+Google.APIs*
+
+# Frontend #
+node_modules/
