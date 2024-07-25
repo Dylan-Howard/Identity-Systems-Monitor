@@ -23,7 +23,9 @@ export const ProfileShowCardActions = ({ system } : {system: string}) => {
   });
 
   const handleActionClick = () => {
-    let url = `${apiUrl}/users/${record.email}/sync/${system}`;
+    const targetSystem = system.replace(' ', '').toLowerCase()
+    let url = `${apiUrl}/users/${record.email}/sync/${targetSystem}`;
+    console.log(url);
 
     setIsActing(true);
 
