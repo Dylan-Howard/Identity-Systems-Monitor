@@ -66,4 +66,42 @@ CREATE TABLE task (
   [active] BIT NOT NULL
 );
 
+CREATE TABLE org (
+  [sourced_id] UNIQUEIDENTIFIER NOT NULL PRIMARY KEY,
+  [status] BIT NOT NULL,
+  [date_last_modified] DATETIME NOT NULL,
+  [address] NVARCHAR(32) NOT NULL,
+  [city] NVARCHAR(32) NOT NULL,
+  [state] NVARCHAR(16) NOT NULL,
+  [zip] NVARCHAR(5) NOT NULL,
+  [identifier] NVARCHAR(8) NOT NULL,
+  [name] NVARCHAR(32) NOT NULL,
+  [type] NVARCHAR(8) NOT NULL,
+);
+
+CREATE TABLE class (
+  [sourced_id] UNIQUEIDENTIFIER NOT NULL PRIMARY KEY,
+  [status] BIT NOT NULL,
+  [date_last_modified] DATETIME NOT NULL,
+  [title] NVARCHAR(32) NOT NULL,
+  [class_type] NVARCHAR(32) NOT NULL,
+  [class_code] NVARCHAR(16) NOT NULL,
+  [location] NVARCHAR(5) NOT NULL,
+  [org_sourced_id] UNIQUEIDENTIFIER FOREIGN KEY REFERENCES org(sourced_id),
+);
+
+CREATE TABLE enrollment (
+  [sourced_id] UNIQUEIDENTIFIER NOT NULL PRIMARY KEY,
+  [status] BIT NOT NULL,
+  [date_last_modified] DATETIME NOT NULL,
+  [role] NVARCHAR(8) NOT NULL,
+  [primary] BIT NOT NULL,
+  [type] NVARCHAR(16) NOT NULL,
+  [begin_date] NVARCHAR(5) NOT NULL,
+  [end_date] NVARCHAR(8) NOT NULL,
+  [user_sourced_id] NVARCHAR(50),
+  [class_sourced_id] UNIQUEIDENTIFIER FOREIGN KEY REFERENCES class(sourced_id),
+  [org_sourced_id] UNIQUEIDENTIFIER FOREIGN KEY REFERENCES org(sourced_id),
+);
+
 SELECT * FROM [task]

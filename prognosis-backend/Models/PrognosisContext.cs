@@ -9,6 +9,9 @@ public class PrognosisContext : DbContext
     public DbSet<Total> Totals { get; set; }
     public DbSet<Service> Services { get; set; }
     public DbSet<Link> Links { get; set; }
+    public DbSet<OneRosterOrg> Orgs { get; set; }
+    public DbSet<OneRosterClass> Classes { get; set; }
+    public DbSet<OneRosterEnrollment> Enrollments { get; set; }
 
     public string connString { get; }
 
