@@ -1,9 +1,11 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace prognosis_backend.models
 {
     public class OneRosterUser
     {
+        [Key]
         [JsonPropertyName("sourcedId")]
         public Guid SourcedId { get; set; }
         [JsonPropertyName("status")]
@@ -59,7 +61,7 @@ namespace prognosis_backend.models
         [JsonPropertyName("guardian")]
         public bool Guardian { get; set; }
         [JsonPropertyName("relationshipType")]
-        public required string Type { get; set; }
+        public string? Type { get; set; }
 
         public static implicit operator string?(OneRosterUserRelationship? v)
         {

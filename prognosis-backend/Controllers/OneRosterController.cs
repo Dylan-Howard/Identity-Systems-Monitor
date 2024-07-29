@@ -17,28 +17,30 @@ namespace prognosis_backend.Controllers
     // [ApiController]
     public class OneRosterController : ControllerBase
     {
-        private readonly PrognosisContext _context;
-
-        public OneRosterController(PrognosisContext context)
+        private OneRosterConnectionSettings _connectionSettings;
+        private HttpClient? _client;
+        public int fetchLimit;
+        public OneRosterController(OneRosterConnectionSettings settings)
         {
-            _context = context;
+            _connectionSettings = settings;
+            fetchLimit = 100;
         }
-
-        static HttpClient client = new HttpClient();
-        public static async Task<string> GetAccessToken(OneRosterConnectionSettings settings)
+        
+        public async Task<string> GetAccessToken()
         {
-            var client = new HttpClient();
+            HttpClient client = new HttpClient();
+            
             var content = new FormUrlEncodedContent(new[]
             {
                 new KeyValuePair<string, string>("grant_type", "client_credentials"),
-                new KeyValuePair<string, string>("client_id", settings.ClientId),
-                new KeyValuePair<string, string>("client_secret", settings.ClientSecret)
+                new KeyValuePair<string, string>("client_id", _connectionSettings.ClientId),
+                new KeyValuePair<string, string>("client_secret", _connectionSettings.ClientSecret)
             });
 
-            var response = await client.PostAsync(settings.TokenUrl, content);
+            var response = await client.PostAsync(_connectionSettings.TokenUrl, content);
             response.EnsureSuccessStatusCode();
 
-            OneRosterTokenResponse tokenResponse = await response.Content.ReadFromJsonAsync<OneRosterTokenResponse>();
+            OneRosterTokenResponse? tokenResponse = await response.Content.ReadFromJsonAsync<OneRosterTokenResponse>();
 
             if (tokenResponse != null)
             {
@@ -47,77 +49,165 @@ namespace prognosis_backend.Controllers
 
             return "failed";
         }
-        static async Task<HttpClient> PrepareClient(OneRosterConnectionSettings settings)
+        private async Task<HttpClient?> PrepareClient()
         {
-            string accessToken = await GetAccessToken(settings);
+            if (_client != null)
+            {
+                return _client;
+            }
+
+            string accessToken = await GetAccessToken();
 
             if (accessToken == "failed")
             {
                 return null;
             }
 
-            client.BaseAddress = new Uri(settings.BaseUrl);
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue("application/json"));
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
-            return client;
-        }
-
-        public static async Task<List<OneRosterUser>> FetchUsersAsync(OneRosterConnectionSettings settings)
-        {
-            client = await PrepareClient(settings);
-
-            if (client == null)
+            _client = new HttpClient
             {
-                return null;
+              BaseAddress = new Uri(_connectionSettings.BaseUrl)
+            };
+
+            _client.DefaultRequestHeaders.Accept.Clear();
+            _client.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+            return _client;
+        }
+        public async Task<List<OneRosterUser>> FetchOneRosterUsersAsync()
+        {
+            _client = await PrepareClient();
+
+            if (_client == null)
+            {
+                return [];
             }
 
             List<OneRosterUser> users = [];
-            HttpResponseMessage response = await client.GetAsync("enrollments");
+            HttpResponseMessage response;
+            OneRosterUsersResponse? json;
+            int offsetIndex = 0;
+            int lastItemCount = fetchLimit;
 
-            Console.WriteLine(response.StatusCode);
+            do
+            {
+                response = await _client.GetAsync($"users?limit={fetchLimit}&offset={offsetIndex}");
+                
+                if (response.IsSuccessStatusCode)
+                {
+                    json = await response.Content.ReadFromJsonAsync<OneRosterUsersResponse>();
+                    if (json != null) {
+                        Console.WriteLine($"Fetched {json.Users.Count} users. {users.Count} total now.");
+                        users.AddRange(json.Users);
+                    }
+                    offsetIndex += json != null ? json.Users.Count : fetchLimit;
+                    lastItemCount = json != null ? json.Users.Count : 0;
+                }
+                else
+                {
+                  lastItemCount = 0;
+                }
+            }
+            while (fetchLimit <= lastItemCount);
+
+            return users;
+        }
+        public async Task<List<OneRosterOrg>> FetchOneRosterOrgsAsync()
+        {
+            _client = await PrepareClient();
+
+            if (_client == null)
+            {
+                return [];
+            }
+
+            List<OneRosterOrg> orgs = [];
+            HttpResponseMessage response = await _client.GetAsync("orgs");
 
             if (response.IsSuccessStatusCode)
             {
-                var json = await response.Content.ReadFromJsonAsync<OneRosterEnrollmentsResponse>();
-                Console.WriteLine(json.Enrollments.FirstOrDefault());
+                var json = await response.Content.ReadFromJsonAsync<OneRosterOrgsResponse>();
 
-                // var json = await response.Content.ReadAsStringAsync();
-                // Console.WriteLine(json);
-
-                // if (json != null) {
-                //     users = json.Orgs;
-                // }
+                if (json != null) {
+                    orgs = json.Orgs;
+                }
             }
-            return users;
+            return orgs;
         }
+        public async Task<List<OneRosterClass>> FetchOneRosterClassesAsync()
+        {
+            _client = await PrepareClient();
 
-        // // GET: api/Agents
-        // [HttpGet]
-        // public async Task<ActionResult<AgentList>> GetAgent()
-        // {
-        //     List<Agent> agents = await _context.Agents.ToListAsync();
-        //     return new AgentList {
-        //       Agents = agents,
-        //       Total = agents.Count,
-        //     };
-        // }
+            if (_client == null)
+            {
+                return [];
+            }
 
-        // // GET: api/Agents/5
-        // [HttpGet("{id}")]
-        // public async Task<ActionResult<Agent>> GetAgent(Guid id)
-        // {
-        //     var agent = await _context.Agents.FindAsync(id);
+            List<OneRosterClass> classes = [];
+            HttpResponseMessage response;
+            OneRosterClassesResponse? json;
+            int offsetIndex = 0;
+            int lastItemCount = fetchLimit;
 
-        //     if (agent == null)
-        //     {
-        //         return NotFound();
-        //     }
+            do
+            {
+                response = await _client.GetAsync($"classes?limit={fetchLimit}&offset={offsetIndex}");
+                
+                if (response.IsSuccessStatusCode)
+                {
+                    json = await response.Content.ReadFromJsonAsync<OneRosterClassesResponse>();
+                    if (json != null) {
+                        Console.WriteLine($"Fetched {json.Classes.Count} classes. {classes.Count} total now.");
+                        classes.AddRange(json.Classes);
+                    }
+                    offsetIndex += json != null ? json.Classes.Count : fetchLimit;
+                    lastItemCount = json != null ? json.Classes.Count : 0;
+                }
+                else
+                {
+                  lastItemCount = 0;
+                }
+            }
+            while (fetchLimit <= lastItemCount);
+            return classes;
+        }
+        public async Task<List<OneRosterEnrollment>> FetchOneRosterEnrollmentsAsync()
+        {
+            _client = await PrepareClient();
 
-        //     return agent;
-        // }
+            if (_client == null)
+            {
+                return [];
+            }
 
+            List<OneRosterEnrollment> enrollments = [];
+            HttpResponseMessage response;
+            OneRosterEnrollmentsResponse? json;
+            int offsetIndex = 0;
+            int lastFetchCount = fetchLimit;
+
+            do
+            {
+                response = await _client.GetAsync($"enrollments?limit={fetchLimit}&offset={offsetIndex}");
+                if (response.IsSuccessStatusCode)
+                {
+                    json = await response.Content.ReadFromJsonAsync<OneRosterEnrollmentsResponse>();
+                    if (json != null) {
+                        Console.WriteLine($"Fetched {json.Enrollments.Count} enrollments. {enrollments.Count} total now.");
+                        enrollments.AddRange(json.Enrollments);
+                    }
+                    offsetIndex += json != null ? json.Enrollments.Count : fetchLimit;
+                    lastFetchCount = json != null ? json.Enrollments.Count : 0;
+                }
+                else
+                {
+                    lastFetchCount = 0;
+                }
+            }
+            while (fetchLimit <= lastFetchCount);
+
+            return enrollments;
+        }
     }
 }

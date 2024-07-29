@@ -1,5 +1,6 @@
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using prognosis_backend.Controllers;
 using prognosis_backend.models;
 
 namespace prognosis_backend
@@ -180,8 +181,6 @@ namespace prognosis_backend
               var db = new PrognosisContext(settings);
               Console.WriteLine("Inserting a new link");
 
-              Console.WriteLine(addLink);
-
               await db.AddAsync(addLink);
               await db.SaveChangesAsync();
             }
@@ -193,66 +192,102 @@ namespace prognosis_backend
                 }
 
                 Console.WriteLine(e.ToString());
-                Console.WriteLine(e.Number);
                 return false;
             }
 
             return true;
         }
 
-        static async Task<bool> UpdateLinkRecord(PrognosisConnectionSettings settings, Link updateLink, Guid serviceId, int retryCount)
+        static LinkRecordChanges HasLinkRecordChanged(Link link1, Link link2)
+        {
+            List<string> changedFields = [];
+
+            if (link1.FirstName != link2.FirstName) {
+                link1.FirstName = link2.FirstName;
+                changedFields.Add("FirstName");
+            }
+              if (link1.LastName != link2.LastName) {
+                link1.LastName = link2.LastName;
+                changedFields.Add("LastName");
+            }
+              if (link1.Active != link2.Active) {
+                link1.Active = link2.Active;
+                changedFields.Add("Active");
+            }
+              if (link1.OrgUnitPath != link2.OrgUnitPath) {
+                link1.OrgUnitPath = link2.OrgUnitPath;
+                changedFields.Add("OrgUnitPath");
+            }
+            if (link1.Organization != link2.Organization) {
+                link1.Organization = link2.Organization;
+                changedFields.Add("Organization");
+            }
+            if (link1.PhotoUrl != link2.PhotoUrl) {
+                link1.PhotoUrl = link2.PhotoUrl;
+                changedFields.Add("PhotoUrl");
+            }
+            if (link1.Email != link2.Email) {
+                link1.Email = link2.Email;
+                changedFields.Add("Email");
+            }
+            if (link1.Address != link2.Address) {
+                link1.Address = link2.Address;
+                changedFields.Add("Address");
+            }
+            if (link1.Phone != link2.Phone) {
+                link1.Phone = link2.Phone;
+                changedFields.Add("Phone");
+            }
+            if (link1.CreatedDate != link2.CreatedDate) {
+                link1.CreatedDate = link2.CreatedDate;
+                changedFields.Add("CreatedDate");
+            }
+            if (link1.LastActivity != link2.LastActivity) {
+                link1.LastActivity = link2.LastActivity;
+                changedFields.Add("LastActivity");
+            }
+            
+            return new LinkRecordChanges {
+                ChangedFields = changedFields
+            };
+        }
+
+        static async Task<bool> UpdateLinkRecord(PrognosisConnectionSettings settings, Link updateLink, int retryCount)
         {
             if (retryCount == 0) {
-              return false;
+                return false;
             }
 
             try
             {
-              var db = new PrognosisContext(settings);
-              Console.WriteLine("Updating a link");
+                var db = new PrognosisContext(settings);
 
-              Link l = db.Links.Single(
-                (l) => Equals(l.ProfileId, updateLink.ProfileId)
-                        && serviceId.ToString() == updateLink.ServiceId.ToString());
+                Link? link = await db.Links.FirstOrDefaultAsync(
+                  (l) => Equals(l.ProfileId, updateLink.ProfileId)
+                          && l.ServiceId.ToString() == updateLink.ServiceId.ToString()
+                          && l.ServiceIdentifier == updateLink.ServiceIdentifier);
 
-              if (l.FirstName != updateLink.FirstName) {
-                l.FirstName = updateLink.FirstName;
-              }
-              if (l.LastName != updateLink.LastName) {
-                l.LastName = updateLink.LastName;
-              }
-              if (l.Active != updateLink.Active) {
-                l.Active = updateLink.Active;
-              }
-              if (l.OrgUnitPath != updateLink.OrgUnitPath) {
-                l.OrgUnitPath = updateLink.OrgUnitPath;
-              }
-              if (l.Organization != updateLink.Organization) {
-                l.Organization = updateLink.Organization;
-              }
-              if (l.PhotoUrl != updateLink.PhotoUrl) {
-                l.PhotoUrl = updateLink.PhotoUrl;
-              }
-              if (l.Address != updateLink.Address) {
-                l.Address = updateLink.Address;
-              }
-              if (l.Phone != updateLink.Phone) {
-                l.Phone = updateLink.Phone;
-              }
-              if (l.CreatedDate != updateLink.CreatedDate) {
-                l.CreatedDate = updateLink.CreatedDate;
-              }
-              if (l.LastActivity != updateLink.LastActivity) {
-                l.LastActivity = updateLink.LastActivity;
-              }
-              
-              await db.SaveChangesAsync();
+                if (link == null)
+                {
+                    return false;
+                }
+
+                LinkRecordChanges changes = HasLinkRecordChanged(updateLink, link);
+
+                if (changes.ChangedFields.Count == 0)
+                {
+                    return true;
+                }
+
+                Console.WriteLine("Updating a link");
+                
+                await db.SaveChangesAsync();
             }
             catch (SqlException e)
             {
                 if (e.Number == -2) {
                     Console.WriteLine("Connection timed out. Retrying...");
-                    return await UpdateLinkRecord(settings, updateLink, serviceId, retryCount - 1);
+                    return await UpdateLinkRecord(settings, updateLink, retryCount - 1);
                 }
                 Console.WriteLine(e.ToString());
                 return false;
@@ -299,12 +334,9 @@ namespace prognosis_backend
 
             return true;
         }
-
         public static async Task<bool> SyncRapidIdentity(PrognosisConnectionSettings proSettings, RapidIdentityConnectionSettings riSettings, List<Profile> profiles)
         {
             List<RapidIdentityUser> users = await RapidIdentity.GetUsersAsync(riSettings);
-
-            Console.WriteLine(users.Count);
             
             foreach (RapidIdentityUser user in users)
             {
@@ -322,9 +354,7 @@ namespace prognosis_backend
                 /* Check for existing profile */
                 if (match == null) {
                     Console.WriteLine($"Adding {user.Email}");
-                    Console.WriteLine(user);
                     Profile? toAdd = user;
-                    Console.WriteLine(toAdd);
 
                     if (toAdd == null) {
                       continue;
@@ -412,7 +442,7 @@ namespace prognosis_backend
                 else
                 {
                     l.ProfileId = match.ProfileId;
-                    bool updateSuccess = await UpdateLinkRecord(settings, l, googleService.ServiceId, 3);
+                    bool updateSuccess = await UpdateLinkRecord(settings, l, 3);
                     if (!updateSuccess)
                     {
                         return false;
@@ -432,6 +462,98 @@ namespace prognosis_backend
             Console.WriteLine("Google sync succeeded!");
             return true;
         }
+        public static async Task<bool> SyncOneRoster(PrognosisConnectionSettings settings, OneRosterController oneRosterConnection)
+        {
+            Service? oneRosterService = await FetchServiceByName(settings, "One Roster", 3);
+            if (oneRosterService == null) {
+                return false;
+            }
+
+            // List<OneRosterOrg> oneRosterOrgs = await oneRosterConnection.FetchOneRosterOrgsAsync();
+            // Console.WriteLine($"Received {oneRosterOrgs.Count} orgs.");
+
+            // List<OneRosterClass> oneRosterClasses = await oneRoster.FetchOneRosterClassesAsync();
+            // Console.WriteLine($"Received {oneRosterClasses.Count} classes.");
+            
+            // List<OneRosterEnrollment> oneRosterEnrollments = await oneRoster.FetchOneRosterEnrollmentsAsync();
+            // Console.WriteLine($"Received {oneRosterEnrollments.Count} enrollments.");
+
+            string oneRosterServiceString = oneRosterService.ServiceId.ToString();
+            List<OneRosterUser> oneRosterUsers = await oneRosterConnection.FetchOneRosterUsersAsync();
+            Console.WriteLine($"Received {oneRosterUsers.Count} users.");
+            List<Link> oneRosterLinks = oneRosterUsers.Select((usr) => new Link {
+                ServiceId = oneRosterService.ServiceId,
+                ServiceIdentifier = usr.SourcedId.ToString(),
+                Active = usr.EnabledUser == "active",
+                FirstName = usr.GivenName ?? "",
+                LastName = usr.FamilyName ?? "",
+                Email = usr.Email,
+                Phone = usr.SMS,
+                OrgUnitPath = "None",
+                LastActivity = usr.DateLastModified,
+            }).ToList();
+
+            List<Link> links = await FetchLinkRecords(settings, 3);
+            List<Profile> profiles = await FetchProfileRecords(settings, 3);
+
+            Console.WriteLine("Processing One Roster data");
+
+            // foreach (Link l in oneRosterLinks)
+            // {
+            //     /* Match Link to Profile */
+            //     Profile? profile = profiles.Find(
+            //         (p) => string.Equals(p.Email.ToLower(), l.Email?.ToLower()));
+                
+            //     /* Check for existence of corresponding profile */
+            //     if (profile == null)
+            //     {
+            //       continue;
+            //     }
+            //     l.ProfileId = profile.ProfileId;
+
+            //     /* Checks for existing linked account for this service */
+            //     Link? match = links.Find(
+            //         (lnk) => lnk.ProfileId == l.ProfileId && lnk.ServiceId.ToString() == oneRosterServiceString);
+
+            //     /* Adds if linked account does not exist  */
+            //     if (match == null)
+            //     {
+            //         bool addSuccess = await AddLinkRecord(settings, l, 3);
+            //         if (!addSuccess)
+            //         {
+            //             return false;
+            //         }
+            //     }
+            //     /* Updates linked account if exists */
+            //     else
+            //     {
+            //         l.ProfileId = match.ProfileId;
+            //         bool updateSuccess = await UpdateLinkRecord(settings, l, 3);
+            //         if (!updateSuccess)
+            //         {
+            //             return false;
+            //         }
+            //     }
+            // }
+
+            /* Log Totals */
+            Console.WriteLine($"Found {oneRosterLinks.Count} link(s)");
+            bool logOneRosterSuccessful = await LogSyncResults(settings, "One Roster", oneRosterLinks.Count, 3);
+
+            if (!logOneRosterSuccessful) {
+              Console.WriteLine("Log encountered an error!");
+              return false;
+            }
+
+            Console.WriteLine("One Roster sync succeeded!");
+            return true;
+        }
     
     }
+
+    class LinkRecordChanges
+    {
+        public required IList<string> ChangedFields { get; set; }
+    }
 }
+

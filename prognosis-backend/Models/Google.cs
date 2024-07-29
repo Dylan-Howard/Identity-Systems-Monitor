@@ -154,6 +154,7 @@ namespace prognosis_backend
                     Active = u.Suspended != true,
                     FirstName = u.Name.GivenName,
                     LastName = u.Name.FamilyName,
+                    Email = u.PrimaryEmail,
                     Address = string.IsNullOrEmpty(address) ? "" : address,
                     Phone = string.IsNullOrEmpty(phone) ? "" : phone,
                     PhotoUrl = string.IsNullOrEmpty(photoUrl) ? "" : photoUrl,

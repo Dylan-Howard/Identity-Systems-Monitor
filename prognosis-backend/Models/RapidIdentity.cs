@@ -39,7 +39,7 @@ namespace prognosis_backend
             return users;
         }
 
-        public static async Task<RapidIdentityUser> GetUserAsync(string userId, RapidIdentityConnectionSettings settings)
+        public static async Task<RapidIdentityUser?> GetUserAsync(string userId, RapidIdentityConnectionSettings settings)
         {
             client = PrepareClient(settings);
 

@@ -32,12 +32,13 @@ CREATE TABLE link (
   [service_identifier] NVARCHAR(50) NOT NULL,
   [first_name] NVARCHAR(50) NOT NULL,
   [last_name] NVARCHAR(50) NOT NULL,
+  [email] NVARCHAR(128),
   [address] NVARCHAR(50),
-  [created_date] DATETIME NOT NULL,
+  [created_date] DATETIME,
   [active] BIT NOT NULL,
   [org_unit_path] NVARCHAR(100) NOT NULL,
   [photo_url] NVARCHAR(128),
-  [phone] NVARCHAR(10),
+  [phone] NVARCHAR(24),
   [organization] NVARCHAR(100),
   [last_activity] DATETIME
 );
@@ -103,5 +104,3 @@ CREATE TABLE enrollment (
   [class_sourced_id] UNIQUEIDENTIFIER FOREIGN KEY REFERENCES class(sourced_id),
   [org_sourced_id] UNIQUEIDENTIFIER FOREIGN KEY REFERENCES org(sourced_id),
 );
-
-SELECT * FROM [task]

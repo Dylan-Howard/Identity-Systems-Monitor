@@ -187,6 +187,8 @@ namespace prognosis.Controllers
             List<ProfileLink> profileLinks = [];
             List<Service> services = await _context.Services.ToListAsync();
 
+            Console.WriteLine("Finding linked accounts");
+
             foreach (Link l in links)
             {
                 Service? linkService = services.FirstOrDefault((s) => s.ServiceId == l.ServiceId);

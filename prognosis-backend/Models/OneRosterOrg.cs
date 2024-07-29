@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
@@ -5,6 +6,7 @@ namespace prognosis_backend.models
 {
     public class OneRosterOrg
     {
+        [Key]
         [JsonPropertyName("sourcedId")]
         public Guid SourcedId { get; set; }
         [JsonPropertyName("status")]

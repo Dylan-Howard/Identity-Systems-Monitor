@@ -16,7 +16,7 @@ namespace prognosis_backend.models
         [JsonPropertyName("role")]
         public string? Role { get; set; }
         [JsonPropertyName("primary")]
-        public bool Primary { get; set; }
+        public string? Primary { get; set; }
         [JsonPropertyName("type")]
         public string? Type { get; set; }
         [JsonPropertyName("beginDate")]

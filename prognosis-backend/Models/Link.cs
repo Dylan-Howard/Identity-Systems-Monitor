@@ -29,6 +29,9 @@ public class Link
     [Column("last_name")]
     [JsonPropertyName("lastName")]
     public required string LastName { get; set; }
+    [Column("email")]
+    [JsonPropertyName("email")]
+    public string? Email { get; set; }
     [Column("address")]
     [JsonPropertyName("address")]
     public string? Address { get; set; }
@@ -46,10 +49,10 @@ public class Link
     public string? Organization { get; set; }
     [Column("created_date")]
     [JsonPropertyName("createdDate")]
-    public DateTime CreatedDate { get; set; }
+    public DateTime? CreatedDate { get; set; }
     [Column("last_activity")]
     [JsonPropertyName("lastActivity")]
-    public DateTime LastActivity { get; set; }
+    public DateTime? LastActivity { get; set; }
     public static implicit operator string?(Link? l)
     {
       if (l == null) {
@@ -63,6 +66,7 @@ public class Link
         $"\tActive: \"{l.Active}\",\n" +
         $"\tFirstName: \"{l.FirstName}\",\n" +
         $"\tLastName: \"{l.LastName}\",\n" +
+        $"\tEmail: \"{l.Email}\",\n" +
         $"\tAddress: \"{l.Address}\",\n" +
         $"\tPhone: \"{l.Phone}\",\n" +
         $"\tPhotoUrl: \"{l.PhotoUrl}\",\n" +
