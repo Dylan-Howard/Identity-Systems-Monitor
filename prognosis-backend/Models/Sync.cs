@@ -691,7 +691,6 @@ namespace prognosis_backend
                     Console.WriteLine("Failed to match enrollment to a linked user account.");
                     Console.WriteLine(e.User.SourcedId);
 
-                    return false;
                     continue;
                 }
 
