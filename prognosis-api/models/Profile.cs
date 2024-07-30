@@ -46,6 +46,7 @@ public class Profile
 public class ProfileShow : Profile
 {
   public required List<ProfileLink> Links { get; set; }
+  public required List<ProfileClass> Classes { get; set; }
 }
 
 public class ProfileList
