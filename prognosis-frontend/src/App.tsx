@@ -15,6 +15,8 @@ import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 
 import { iamTheme } from './Theme'
 import { JobList } from './Job/JobList';
+import { TaskList } from './Task/TaskList';
+import { JobCreate } from './Job/JobCreate';
 
 export const App = () => (
   <Admin
@@ -39,18 +41,31 @@ export const App = () => (
     />
     <Resource
       name="jobs"
+      create={JobCreate}
       list={JobList}
       show={ShowGuesser}
       icon={WorkIcon}
     />
     <Resource
       name="tasks"
-      list={ListGuesser}
+      list={TaskList}
       show={ShowGuesser}
       icon={TaskIcon}
     />
     <Resource
       name="agents"
+      list={ListGuesser}
+      show={ShowGuesser}
+      icon={SupportAgentIcon}
+    />
+    <Resource
+      name="organizations"
+      list={ListGuesser}
+      show={ShowGuesser}
+      icon={SupportAgentIcon}
+    />
+    <Resource
+      name="classes"
       list={ListGuesser}
       show={ShowGuesser}
       icon={SupportAgentIcon}

@@ -25,6 +25,23 @@ import { ProfileSkeleton } from '../Skeleton/ProfileSkeleton';
 import { ProBreadcrumbs } from '../Modules/ProBreadcrumbs';
 import { ProfileShowCardActions } from './ProfileShowCardActions';
 
+const ProfileShowListCard = ({ title, list }: { title: string, list: any[] }) => {
+
+  return (
+    <Card sx={{ p: 2, mb: 2 }}>
+      <Stack direction="row" justifyContent="space-between" spacing={2}>
+        <Typography variant="h2" fontSize={18} fontWeight={600} gutterBottom>{title}</Typography>
+      </Stack>
+      
+      <Stack>
+        {
+          list.map((l) => <Typography>{l.title ? l.title : 'Unknown class'}</Typography>)
+        }
+      </Stack>
+    </Card>
+  )
+}
+
 const ProfileShowCard = ({ title, data, columns, system }: { title: string, data: any[], columns: number, system: string }) => {
 
   const fields = [];
@@ -45,7 +62,11 @@ const ProfileShowCard = ({ title, data, columns, system }: { title: string, data
     <Card sx={{ p: 2, mb: 2 }}>
       <Stack direction="row" justifyContent="space-between" spacing={2}>
         <Typography variant="h2" fontSize={18} fontWeight={600} gutterBottom>{title}</Typography>
-        <ProfileShowCardActions system={system} />
+        {
+          system === 'Google'
+            ? <ProfileShowCardActions system={system} />
+            : ''
+        }
       </Stack>
       
       <Grid container spacing={2}>
@@ -190,6 +211,11 @@ const ProfileShowLayout = () => {
                   system={lnk.serviceName}
                 />
               ))
+              : ''
+          }
+          {
+            record.classes && record.classes.length !== 0
+              ? <ProfileShowListCard key="Classes" title="Classes" list={record.classes} />
               : ''
           }
         </Container>
