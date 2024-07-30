@@ -13,8 +13,6 @@ using prognosis_backend.models;
 
 namespace prognosis_backend.Controllers
 {
-    // [Route("api/[controller]")]
-    // [ApiController]
     public class OneRosterController : ControllerBase
     {
         private OneRosterConnectionSettings _connectionSettings;

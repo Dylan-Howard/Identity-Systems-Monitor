@@ -5,7 +5,7 @@ using prognosis_backend.models;
 
 namespace prognosis_backend
 {   
-    class RapidIdentity()
+    class RapidIdentityController()
     {
 
         static HttpClient client = new HttpClient();

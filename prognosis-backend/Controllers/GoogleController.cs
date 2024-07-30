@@ -10,7 +10,7 @@ using Google.Apis.AlertCenter.v1beta1;
 namespace prognosis_backend
 {
     // Class to demonstrate the use of Directory users list API
-	class GoogleWorkspace
+	class GoogleController
     {
         /* Global instance of the scopes required by this quickstart.
          If modifying these scopes, delete your previously saved token.json/ folder. */
@@ -129,9 +129,7 @@ namespace prognosis_backend
         public static List<Link> FetchLinks(string serviceId)
         {
             IList<Google.Apis.Admin.Directory.directory_v1.Data.User> users = FetchUsers();
-            List<Link> links = new List<Link>();
-
-            Console.WriteLine("Processing Google users");
+            List<Link> links = [];
 
             foreach (Google.Apis.Admin.Directory.directory_v1.Data.User u in users)
             {
