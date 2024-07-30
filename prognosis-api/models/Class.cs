@@ -8,7 +8,7 @@ namespace Prognosis.Models;
 public class Class
 {
     [Key]
-    [JsonPropertyName("sourcedId")]
+    [JsonPropertyName("id")]
     [Column("sourced_id")]
     public Guid SourcedId { get; set; }
     [JsonPropertyName("identifier")]
@@ -66,4 +66,13 @@ public class ProfileClass : Class
 {
     [JsonPropertyName("organization")]
     public string? Organization { get; set; }
+}
+
+public class ClassList
+{
+    [Key]
+    [JsonPropertyName("data")]
+    public required List<Class> Classes { get; set; }
+    [JsonPropertyName("total")]
+    public int Total { get; set; }
 }

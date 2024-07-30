@@ -8,7 +8,7 @@ namespace prognosis_backend.models;
 public class Enrollment
 {
     [Key]
-    [JsonPropertyName("sourcedId")]
+    [JsonPropertyName("id")]
     [Column("sourced_id")]
     public Guid SourcedId { get; set; }
     [JsonPropertyName("identifier")]

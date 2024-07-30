@@ -2,13 +2,12 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
-namespace Prognosis.Models
-{
+namespace Prognosis.Models;
     [Table("org")]
     public class Org
     {
         [Key]
-        [JsonPropertyName("sourcedId")]
+        [JsonPropertyName("id")]
         [Column("sourced_id")]
         public Guid SourcedId { get; set; }
         [JsonPropertyName("status")]
@@ -68,5 +67,12 @@ namespace Prognosis.Models
             return objString;
         }
     }
-}
 
+public class OrgList
+{
+    [Key]
+    [JsonPropertyName("data")]
+    public required List<Org> Orgs { get; set; }
+    [JsonPropertyName("total")]
+    public int Total { get; set; }
+}
