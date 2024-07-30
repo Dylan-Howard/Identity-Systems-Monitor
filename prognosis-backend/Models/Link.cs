@@ -18,33 +18,42 @@ public class Link
     [JsonPropertyName("serviceId")]
     public Guid ServiceId { get; set; }
     [Column("service_identifier")]
+    [MaxLength(50)]
     [JsonPropertyName("identifier")]
     public required string ServiceIdentifier { get; set; }
     [Column("active")]
     [JsonPropertyName("active")]
     public bool Active { get; set; }
     [Column("first_name")]
+    [MaxLength(50)]
     [JsonPropertyName("firstName")]
     public required string FirstName { get; set; }
     [Column("last_name")]
+    [MaxLength(50)]
     [JsonPropertyName("lastName")]
     public required string LastName { get; set; }
     [Column("email")]
+    [MaxLength(128)]
     [JsonPropertyName("email")]
     public string? Email { get; set; }
     [Column("address")]
+    [MaxLength(50)]
     [JsonPropertyName("address")]
     public string? Address { get; set; }
     [Column("phone")]
+    [MaxLength(24)]
     [JsonPropertyName("phone")]
     public string? Phone { get; set; }
     [Column("photo_url")]
+    [MaxLength(128)]
     [JsonPropertyName("photoUrl")]
     public string? PhotoUrl { get; set; }
     [Column("org_unit_path")]
+    [MaxLength(100)]
     [JsonPropertyName("orgUnitPath")]
     public required string OrgUnitPath { get; set; }
     [Column("organization")]
+    [MaxLength(100)]
     [JsonPropertyName("organization")]
     public string? Organization { get; set; }
     [Column("created_date")]
@@ -78,4 +87,9 @@ public class Link
 
       return objString;
     }
+}
+
+public class LinkRecordChanges
+{
+    public required IList<string> ChangedFields { get; set; }
 }
