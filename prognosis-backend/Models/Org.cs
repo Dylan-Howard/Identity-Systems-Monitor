@@ -23,7 +23,7 @@ namespace prognosis_backend.models
         public required string Name { get; set; }
         [JsonPropertyName("identifier")]
         [Column("identifier")]
-        [MaxLength(8)]
+        [MaxLength(36)]
         public required string Identifier { get; set; }
         [JsonPropertyName("type")]
         [Column("type")]

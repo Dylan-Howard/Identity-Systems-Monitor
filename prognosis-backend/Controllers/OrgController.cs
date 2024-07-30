@@ -7,17 +7,17 @@ namespace prognosis_backend;
 
 public class OrgController
 {
-    public static async Task<List<Link>> FetchOrgRecords(PrognosisConnectionSettings settings, int retryCount)
+    public static async Task<List<Org>> FetchOrgRecords(PrognosisConnectionSettings settings, int retryCount)
     {
-        List<Link> links = [];
+        List<Org> orgs = [];
         if (retryCount == 0) {
-            return links;
+            return orgs;
         }
 
         try
         {
             var db = new PrognosisContext(settings);
-            links = await db.Links.ToListAsync();
+            orgs = await db.Orgs.ToListAsync();
         }
         catch (SqlException e)
         {
@@ -29,10 +29,10 @@ public class OrgController
             }
         }
             
-        return links;
+        return orgs;
     }
 
-    static async Task<bool> AddOrgRecord(PrognosisConnectionSettings settings, Link addLink, int retryCount)
+    public static async Task<bool> AddOrgRecord(PrognosisConnectionSettings settings, Org addOrg, int retryCount)
     {
         if (retryCount == 0) {
             return false;
@@ -40,17 +40,15 @@ public class OrgController
 
         try
         {
-          var db = new PrognosisContext(settings);
-          Console.WriteLine("Inserting a new link");
-
-          await db.AddAsync(addLink);
-          await db.SaveChangesAsync();
+            var db = new PrognosisContext(settings);
+            await db.AddAsync(addOrg);
+            await db.SaveChangesAsync();
         }
         catch (SqlException e)
         {
             if (e.Number == -2) {
                 Console.WriteLine("Connection timed out. Retrying...");
-                return await AddOrgRecord(settings, addLink, retryCount - 1);
+                return await AddOrgRecord(settings, addOrg, retryCount - 1);
             }
 
             Console.WriteLine(e.ToString());
@@ -59,101 +57,85 @@ public class OrgController
 
         return true;
     }
+    static RecordChanges HasOrgRecordChanged(Org org1, Org org2)
+    {
+        List<string> changedFields = [];
 
-    // static LinkRecordChanges HasOrgRecordChanged(Link link1, Link link2)
-    // {
-    //     List<string> changedFields = [];
-
-    //     if (link1.FirstName != link2.FirstName) {
-    //         link1.FirstName = link2.FirstName;
-    //         changedFields.Add("FirstName");
-    //     }
-    //       if (link1.LastName != link2.LastName) {
-    //         link1.LastName = link2.LastName;
-    //         changedFields.Add("LastName");
-    //     }
-    //       if (link1.Active != link2.Active) {
-    //         link1.Active = link2.Active;
-    //         changedFields.Add("Active");
-    //     }
-    //       if (link1.OrgUnitPath != link2.OrgUnitPath) {
-    //         link1.OrgUnitPath = link2.OrgUnitPath;
-    //         changedFields.Add("OrgUnitPath");
-    //     }
-    //     if (link1.Organization != link2.Organization) {
-    //         link1.Organization = link2.Organization;
-    //         changedFields.Add("Organization");
-    //     }
-    //     if (link1.PhotoUrl != link2.PhotoUrl) {
-    //         link1.PhotoUrl = link2.PhotoUrl;
-    //         changedFields.Add("PhotoUrl");
-    //     }
-    //     if (link1.Email != link2.Email) {
-    //         link1.Email = link2.Email;
-    //         changedFields.Add("Email");
-    //     }
-    //     if (link1.Address != link2.Address) {
-    //         link1.Address = link2.Address;
-    //         changedFields.Add("Address");
-    //     }
-    //     if (link1.Phone != link2.Phone) {
-    //         link1.Phone = link2.Phone;
-    //         changedFields.Add("Phone");
-    //     }
-    //     if (link1.CreatedDate != link2.CreatedDate) {
-    //         link1.CreatedDate = link2.CreatedDate;
-    //         changedFields.Add("CreatedDate");
-    //     }
-    //     if (link1.LastActivity != link2.LastActivity) {
-    //          link1.LastActivity = link2.LastActivity;
-    //         changedFields.Add("LastActivity");
-    //     }
+        if (org1.Status != org2.Status) {
+            org1.Status = org2.Status;
+            changedFields.Add("Status");
+        }
+          if (org1.DateLastModified != org2.DateLastModified) {
+            org1.DateLastModified = org2.DateLastModified;
+            changedFields.Add("DateLastModified");
+        }
+          if (org1.Name != org2.Name) {
+            org1.Name = org2.Name;
+            changedFields.Add("Name");
+        }
+          if (org1.Type != org2.Type) {
+            org1.Type = org2.Type;
+            changedFields.Add("Type");
+        }
+        if (org1.Address != org2.Address) {
+            org1.Address = org2.Address;
+            changedFields.Add("Address");
+        }
+        if (org1.City != org2.City) {
+            org1.City = org2.City;
+            changedFields.Add("City");
+        }
+        if (org1.State != org2.State) {
+            org1.State = org2.State;
+            changedFields.Add("State");
+        }
+        if (org1.Zip != org2.Zip) {
+            org1.Zip = org2.Zip;
+            changedFields.Add("Zip");
+        }
             
-    //     return new LinkRecordChanges {
-    //         ChangedFields = changedFields
-    //     };
-    // }
+        return new RecordChanges {
+            ChangedFields = changedFields
+        };
+    }
+    public static async Task<bool> UpdateOrgRecord(PrognosisConnectionSettings settings, Org updateOrg, int retryCount)
+    {
+        if (retryCount == 0) {
+            return false;
+        }
 
-    // static async Task<bool> UpdateOrgRecord(PrognosisConnectionSettings settings, Link updateLink, int retryCount)
-    // {
-    //     if (retryCount == 0) {
-    //         return false;
-    //     }
+        try
+        {
+            var db = new PrognosisContext(settings);
 
-    //     try
-    //     {
-    //         var db = new PrognosisContext(settings);
+            Org? org = await db.Orgs.FirstOrDefaultAsync(
+                (o) => Equals(o.Identifier, updateOrg.Identifier));
 
-    //         Link? link = await db.Links.FirstOrDefaultAsync(
-    //           (l) => Equals(l.ProfileId, updateLink.ProfileId)
-    //                   && l.ServiceId.ToString() == updateLink.ServiceId.ToString()
-    //                   && l.ServiceIdentifier == updateLink.ServiceIdentifier);
+            if (org == null)
+            {
+                return false;
+            }
 
-    //         if (link == null)
-    //         {
-    //             return false;
-    //         }
+            RecordChanges changes = HasOrgRecordChanged(updateOrg, org);
 
-    //         LinkRecordChanges changes = HasLinkRecordChanged(updateLink, link);
-
-    //         if (changes.ChangedFields.Count == 0)
-    //         {
-    //             return true;
-    //         }
+            if (changes.ChangedFields.Count == 0)
+            {
+                return true;
+            }
                 
-    //         await db.SaveChangesAsync();
-    //     }
-    //     catch (SqlException e)
-    //     {
-    //         if (e.Number == -2) {
-    //             Console.WriteLine("Connection timed out. Retrying...");
-    //             return await UpdateLinkRecord(settings, updateLink, retryCount - 1);
-    //         }
-    //         Console.WriteLine(e.ToString());
-    //         Console.WriteLine(updateLink);
-    //         return false;
-    //     }
+            await db.SaveChangesAsync();
+        }
+        catch (SqlException e)
+        {
+            if (e.Number == -2) {
+                Console.WriteLine("Connection timed out. Retrying...");
+                return await UpdateOrgRecord(settings, updateOrg, retryCount - 1);
+            }
+            Console.WriteLine(e.ToString());
+            Console.WriteLine(updateOrg);
+            return false;
+        }
 
-    //     return true;
-    // }
+        return true;
+    }
 }

@@ -28,13 +28,13 @@ async System.Threading.Tasks.Task RunAsync(IConfiguration configuration)
           Password = proPassword,
         };
 
-        // List<Profile> profiles = await SyncManager.FetchProfileRecords(proConnectionSettings, 3);
+        List<Profile> profiles = await SyncManager.FetchProfileRecords(proConnectionSettings, 3);
 
-        // if (profiles.Count < 1)
-        // {
-        //   Console.WriteLine("Sync encountered an error!");
-        //   return;
-        // }
+        if (profiles.Count < 1)
+        {
+          Console.WriteLine("Sync encountered an error!");
+          return;
+        }
 
         // /* Example fetch and process for Rapid Identity */
         // Console.WriteLine("Fetching Users from Rapid Identity");
@@ -66,7 +66,7 @@ async System.Threading.Tasks.Task RunAsync(IConfiguration configuration)
         //   return;
         // }
 
-        // /* Example fetch and process for Rapid Identity */
+        /* Example fetch and process for Rapid Identity */
         // Console.WriteLine("Fetching Links from Google");
         // bool googleSyncSuccessful = await SyncManager.SyncGoogle(proConnectionSettings);
 

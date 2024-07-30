@@ -60,7 +60,7 @@ public class LinkController
         return true;
     }
 
-    static LinkRecordChanges HasLinkRecordChanged(Link link1, Link link2)
+    static RecordChanges HasLinkRecordChanged(Link link1, Link link2)
     {
         List<string> changedFields = [];
 
@@ -109,7 +109,7 @@ public class LinkController
             changedFields.Add("LastActivity");
         }
             
-        return new LinkRecordChanges {
+        return new RecordChanges {
             ChangedFields = changedFields
         };
     }
@@ -134,7 +134,7 @@ public class LinkController
                 return false;
             }
 
-            LinkRecordChanges changes = HasLinkRecordChanged(updateLink, link);
+            RecordChanges changes = HasLinkRecordChanged(updateLink, link);
 
             if (changes.ChangedFields.Count == 0)
             {

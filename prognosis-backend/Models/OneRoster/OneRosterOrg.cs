@@ -47,14 +47,13 @@ namespace prognosis_backend.models
             }
 
             return new Org {
-                SourcedId = v.SourcedId,
                 Status = v.Status == "active",
                 DateLastModified = v.DateLastModified,
                 Name = v.Name,
-                Identifier = v.Identifier,
-                Type = v.Type,
-                Address = v.Metadata?.Address?.FirstLine,
-                City = v.Metadata?.Address?.City,
+                Identifier = v.SourcedId.ToString(),
+                Type = v.Type ?? "",
+                Address = v.Metadata?.Address?.FirstLine ?? "",
+                City = v.Metadata?.Address?.City ?? "",
                 State = v.Metadata?.Address?.State,
                 Zip = v.Metadata?.Address?.ZipCode,
             };

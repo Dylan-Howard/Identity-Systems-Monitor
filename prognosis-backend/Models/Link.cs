@@ -88,8 +88,3 @@ public class Link
       return objString;
     }
 }
-
-public class LinkRecordChanges
-{
-    public required IList<string> ChangedFields { get; set; }
-}

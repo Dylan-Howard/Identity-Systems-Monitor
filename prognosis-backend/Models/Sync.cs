@@ -198,7 +198,7 @@ namespace prognosis_backend
             return true;
         }
 
-        static LinkRecordChanges HasLinkRecordChanged(Link link1, Link link2)
+        static RecordChanges HasLinkRecordChanged(Link link1, Link link2)
         {
             List<string> changedFields = [];
 
@@ -247,7 +247,7 @@ namespace prognosis_backend
                 changedFields.Add("LastActivity");
             }
             
-            return new LinkRecordChanges {
+            return new RecordChanges {
                 ChangedFields = changedFields
             };
         }
@@ -272,14 +272,12 @@ namespace prognosis_backend
                     return false;
                 }
 
-                LinkRecordChanges changes = HasLinkRecordChanged(updateLink, link);
+                RecordChanges changes = HasLinkRecordChanged(updateLink, link);
 
                 if (changes.ChangedFields.Count == 0)
                 {
                     return true;
                 }
-
-                Console.WriteLine("Updating a link");
                 
                 await db.SaveChangesAsync();
             }
@@ -290,42 +288,36 @@ namespace prognosis_backend
                     return await UpdateLinkRecord(settings, updateLink, retryCount - 1);
                 }
                 Console.WriteLine(e.ToString());
+                Console.WriteLine(updateLink);
                 return false;
             }
 
             return true;
         }
 
-        static async Task<bool> LogSyncResults(PrognosisConnectionSettings settings, string service, int total, int retryCount)
+        static async Task<bool> LogSyncResults(PrognosisConnectionSettings settings, Guid serviceId, int total, int retryCount)
         {
             if (retryCount == 0) {
-              return false;
+                return false;
             }
 
             try
             {
-              var db = new PrognosisContext(settings);
-              Console.WriteLine("Inserting a new service total");
+                var db = new PrognosisContext(settings);
 
-              Service? targetService = await FetchServiceByName(settings, service, retryCount);
+                Total toAdd = new Total {
+                  ServiceId = serviceId,
+                  Count = total,
+                  Timestamp = DateTime.Now,
+                };
 
-              if (targetService == null) {
-                return false;
-              }
-
-              Total toAdd = new Total {
-                ServiceId = targetService.ServiceId,
-                Count = total,
-                Timestamp = DateTime.Now,
-              };
-
-              await db.AddAsync(toAdd);
-              await db.SaveChangesAsync();
+                await db.AddAsync(toAdd);
+                await db.SaveChangesAsync();
             }
             catch (SqlException e)
             {
                 if (e.Number == -2) {
-                    return await LogSyncResults(settings, service, total, retryCount - 1);
+                    return await LogSyncResults(settings, serviceId, total, retryCount - 1);
                 }
 
                 Console.WriteLine(e.ToString());
@@ -336,35 +328,38 @@ namespace prognosis_backend
         }
         public static async Task<bool> SyncRapidIdentity(PrognosisConnectionSettings proSettings, RapidIdentityConnectionSettings riSettings, List<Profile> profiles)
         {
-            List<RapidIdentityUser> users = await RapidIdentity.GetUsersAsync(riSettings);
+            Service? riService = await FetchServiceByName(proSettings, "Rapid Identity", 3);
+            if (riService == null) {
+                return false;
+            }
+            List<RapidIdentityUser> users = await RapidIdentityController.GetUsersAsync(riSettings);
             
             foreach (RapidIdentityUser user in users)
             {
                 if (user == null || user.Email == null) {
-                  continue;
+                    continue;
                 }
 
                 int? identifier = user.EmployeeType == "Staff" ? user.EmployeeId : user.StudentId;
                 if (identifier == null) {
-                  continue;
+                    continue;
                 }
 
                 Profile? match = profiles.Find((p) => p.Identifier == identifier.ToString());
 
                 /* Check for existing profile */
                 if (match == null) {
-                    Console.WriteLine($"Adding {user.Email}");
                     Profile? toAdd = user;
 
                     if (toAdd == null) {
-                      continue;
+                        continue;
                     }
 
                     bool addSuccess = await AddProfileRecord(proSettings, toAdd, 3);
 
-                      if (!addSuccess) {
+                    if (!addSuccess) {
                         return false;
-                      }
+                    }
                     
                     continue;
                 }
@@ -385,13 +380,13 @@ namespace prognosis_backend
                     bool updateSuccess = await UpdateProfileRecord(proSettings, user, 3);
 
                     if (!updateSuccess) {
-                      return false;
+                        return false;
                     }
                 }
             }
 
             Console.WriteLine($"Received {users.Count} user(s) from Rapid Identity");
-            bool logRISuccessful = await LogSyncResults(proSettings, "Rapid Idenity", users.Count, 3);
+            bool logRISuccessful = await LogSyncResults(proSettings, riService.ServiceId, users.Count, 3);
 
             if (logRISuccessful) {
               Console.WriteLine("Log succeeded!");
@@ -401,7 +396,6 @@ namespace prognosis_backend
 
             return true;
         }
-
         public static async Task<bool> SyncGoogle(PrognosisConnectionSettings settings)
         {
             Service? googleService = await FetchServiceByName(settings, "Google Workspace", 3);
@@ -410,15 +404,14 @@ namespace prognosis_backend
             }
 
             string googleServiceString = googleService.ServiceId.ToString();
-            List<Link> googleLinks = GoogleWorkspace.FetchLinks(googleServiceString);
+            List<Link> googleLinks = GoogleController.FetchLinks(googleServiceString);
 
             List<Link> links = await FetchLinkRecords(settings, 3);
             List<Profile> profiles = await FetchProfileRecords(settings, 3);
 
-            Console.WriteLine("Processing Google data");
-
             foreach (Link l in googleLinks)
             {
+                Console.WriteLine(l.Email);
                 Profile? profile = profiles.Find(
                     (p) => string.Equals(p.Email.ToLower(), l.ServiceIdentifier.ToLower()));
                 
@@ -429,13 +422,17 @@ namespace prognosis_backend
                 l.ProfileId = profile.ProfileId;
 
                 Link? match = links.Find(
-                    (lnk) => lnk.ProfileId == l.ProfileId && lnk.ServiceId.ToString() == googleServiceString);
+                    (lnk) => lnk.ProfileId == l.ProfileId
+                      && lnk.ServiceId.ToString() == googleServiceString
+                      && lnk.ServiceIdentifier == l.ServiceIdentifier);
 
                 if (match == null)
                 {
                     bool addSuccess = await AddLinkRecord(settings, l, 3);
                     if (!addSuccess)
                     {
+                        Console.WriteLine("Failed to add");
+                        Console.WriteLine(l);
                         return false;
                     }
                 }
@@ -445,6 +442,8 @@ namespace prognosis_backend
                     bool updateSuccess = await UpdateLinkRecord(settings, l, 3);
                     if (!updateSuccess)
                     {
+                        Console.WriteLine("Failed to update");
+                        Console.WriteLine(l);
                         return false;
                     }
                 }
@@ -452,7 +451,7 @@ namespace prognosis_backend
 
             // Log Totals
             Console.WriteLine($"Found {googleLinks.Count} link(s)");
-            bool logGoogleSuccessful = await LogSyncResults(settings, "Google", googleLinks.Count, 3);
+            bool logGoogleSuccessful = await LogSyncResults(settings, googleService.ServiceId, googleLinks.Count, 3);
 
             if (!logGoogleSuccessful) {
               Console.WriteLine("Log encountered an error!");
@@ -462,6 +461,87 @@ namespace prognosis_backend
             Console.WriteLine("Google sync succeeded!");
             return true;
         }
+        public static async Task<bool> SyncOneRosterOrgs(PrognosisConnectionSettings settings, OneRosterController oneRosterConnection)
+        {
+            List<OneRosterOrg> oneRosterOrgs = await oneRosterConnection.FetchOneRosterOrgsAsync();
+            Console.WriteLine($"Received {oneRosterOrgs.Count} orgs.");
+
+            List<Org> orgs = await OrgController.FetchOrgRecords(settings, 3);
+            Console.WriteLine($"Referencing {orgs.Count} current orgs.");
+            
+            /* Setup org map */
+            var orgMap = new Dictionary<string, int>();
+            foreach (Org o in orgs)
+            {
+                orgMap.Add(o.Identifier, 1);
+            }
+
+            /* Process OneRosterOrg records */
+            foreach (OneRosterOrg o in oneRosterOrgs)
+            {
+                Org? orgRecord = o;
+
+                if (orgRecord == null)
+                {
+                    continue;
+                }
+
+                int orgStatus = 0;
+                orgMap.TryGetValue(orgRecord.Identifier, out orgStatus);
+                if (orgStatus == 0)
+                {
+                    bool addSuccess = await OrgController.AddOrgRecord(settings, orgRecord, 3);
+
+                    if (addSuccess)
+                    {
+                        Console.WriteLine($"{orgRecord.Identifier} successfully added to orgs.");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Failed to add {orgRecord.Identifier} to orgs.");
+                        return false;
+                    }
+                }
+                else if (orgStatus == 1)
+                {
+                    orgMap[o.Identifier] = 0;
+
+                    bool updateSuccess = await OrgController.UpdateOrgRecord(settings, orgRecord, 3);
+                    if (updateSuccess)
+                    {
+                        Console.WriteLine($"{orgRecord.Identifier} successfully updated.");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Failed to update {orgRecord.Identifier}.");
+                        return false;
+                    }
+                }
+            }
+
+            /* Set unmatched records to inactive */
+            foreach (Org o in orgs)
+            {
+                if (orgMap[o.Identifier] == 1)
+                {
+                    o.Status = false;
+
+                    bool updateSuccess = await OrgController.UpdateOrgRecord(settings, o, 3);
+                    if (updateSuccess)
+                    {
+                        Console.WriteLine($"{o.Identifier} successfully updated to orgs.");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Failed to update {o.Identifier} to orgs.");
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+        
         public static async Task<bool> SyncOneRoster(PrognosisConnectionSettings settings, OneRosterController oneRosterConnection)
         {
             Service? oneRosterService = await FetchServiceByName(settings, "One Roster", 3);
@@ -469,8 +549,12 @@ namespace prognosis_backend
                 return false;
             }
 
-            // List<OneRosterOrg> oneRosterOrgs = await oneRosterConnection.FetchOneRosterOrgsAsync();
-            // Console.WriteLine($"Received {oneRosterOrgs.Count} orgs.");
+            bool orgSyncSuccess = await SyncOneRosterOrgs(settings, oneRosterConnection);
+            if (!orgSyncSuccess)
+            {
+                Console.WriteLine("Failed to sync orgs");
+                return false;
+            }
 
             // List<OneRosterClass> oneRosterClasses = await oneRoster.FetchOneRosterClassesAsync();
             // Console.WriteLine($"Received {oneRosterClasses.Count} classes.");
@@ -479,22 +563,22 @@ namespace prognosis_backend
             // Console.WriteLine($"Received {oneRosterEnrollments.Count} enrollments.");
 
             string oneRosterServiceString = oneRosterService.ServiceId.ToString();
-            List<OneRosterUser> oneRosterUsers = await oneRosterConnection.FetchOneRosterUsersAsync();
-            Console.WriteLine($"Received {oneRosterUsers.Count} users.");
-            List<Link> oneRosterLinks = oneRosterUsers.Select((usr) => new Link {
-                ServiceId = oneRosterService.ServiceId,
-                ServiceIdentifier = usr.SourcedId.ToString(),
-                Active = usr.EnabledUser == "active",
-                FirstName = usr.GivenName ?? "",
-                LastName = usr.FamilyName ?? "",
-                Email = usr.Email,
-                Phone = usr.SMS,
-                OrgUnitPath = "None",
-                LastActivity = usr.DateLastModified,
-            }).ToList();
+            // List<OneRosterUser> oneRosterUsers = await oneRosterConnection.FetchOneRosterUsersAsync();
+            // Console.WriteLine($"Received {oneRosterUsers.Count} users.");
+            // List<Link> oneRosterLinks = oneRosterUsers.Select((usr) => new Link {
+            //     ServiceId = oneRosterService.ServiceId,
+            //     ServiceIdentifier = usr.SourcedId.ToString(),
+            //     Active = usr.EnabledUser == "active",
+            //     FirstName = usr.GivenName ?? "",
+            //     LastName = usr.FamilyName ?? "",
+            //     Email = usr.Email,
+            //     Phone = usr.SMS,
+            //     OrgUnitPath = "None",
+            //     LastActivity = usr.DateLastModified,
+            // }).ToList();
 
-            List<Link> links = await FetchLinkRecords(settings, 3);
-            List<Profile> profiles = await FetchProfileRecords(settings, 3);
+            // List<Link> links = await FetchLinkRecords(settings, 3);
+            // List<Profile> profiles = await FetchProfileRecords(settings, 3);
 
             Console.WriteLine("Processing One Roster data");
 
@@ -537,23 +621,17 @@ namespace prognosis_backend
             // }
 
             /* Log Totals */
-            Console.WriteLine($"Found {oneRosterLinks.Count} link(s)");
-            bool logOneRosterSuccessful = await LogSyncResults(settings, "One Roster", oneRosterLinks.Count, 3);
+            // Console.WriteLine($"Found {oneRosterLinks.Count} link(s)");
+            // bool logOneRosterSuccessful = await LogSyncResults(settings, oneRosterService.ServiceId, oneRosterLinks.Count, 3);
 
-            if (!logOneRosterSuccessful) {
-              Console.WriteLine("Log encountered an error!");
-              return false;
-            }
+            // if (!logOneRosterSuccessful) {
+            //   Console.WriteLine("Log encountered an error!");
+            //   return false;
+            // }
 
             Console.WriteLine("One Roster sync succeeded!");
             return true;
         }
-    
-    }
-
-    class LinkRecordChanges
-    {
-        public required IList<string> ChangedFields { get; set; }
     }
 }
 
