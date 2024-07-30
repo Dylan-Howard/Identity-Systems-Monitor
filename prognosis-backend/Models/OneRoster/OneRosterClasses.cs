@@ -23,8 +23,6 @@ namespace prognosis_backend.models
         public string? Location { get; set; }
         [JsonPropertyName("school")]
         public OneRosterClassSchool? School { get; set; }
-        [Column("org_sourced_id")]
-        public string? OrgSourcedId { get; set; }
         [JsonPropertyName("periods")]
         public List<string>? Periods { get; set; }
 
@@ -32,6 +30,12 @@ namespace prognosis_backend.models
         {
           if (v == null) {
             return null;
+          }
+
+          string orgSourcedId = "";
+          if (v.School != null)
+          {
+              orgSourcedId = v.School.SourcedId.ToString();
           }
 
           string objString = $"{{\n" +
@@ -42,9 +46,27 @@ namespace prognosis_backend.models
             $"\tClassType: {v.ClassType},\n" +
             $"\tClassCode: {v.ClassCode},\n" +
             $"\tLocation: {v.Location},\n" +
+            $"\tOrgSourcedId: {orgSourcedId},\n" +
           "}}";
 
           return objString;
+        }
+        public static implicit operator Class?(OneRosterClass? v)
+        {
+            if (v == null) {
+                return null;
+            }
+
+            return new Class {
+                Identifier = v.SourcedId,
+                Status = v.Status == "active",
+                DateLastModified = v.DateLastModified,
+                Title = v.Title ?? "",
+                ClassType = v.ClassType ?? "",
+                ClassCode = v.ClassCode ?? "",
+                Location = v.Location ?? "",
+                OrgSourcedId = v.School != null ? v.School.SourcedId : Guid.Empty
+            };
         }
     }
 

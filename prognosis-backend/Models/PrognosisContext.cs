@@ -10,7 +10,7 @@ public class PrognosisContext : DbContext
     public DbSet<Service> Services { get; set; }
     public DbSet<Link> Links { get; set; }
     public DbSet<Org> Orgs { get; set; }
-    // public DbSet<OneRosterClass> Classes { get; set; }
+    public DbSet<Class> Classes { get; set; }
     // public DbSet<OneRosterEnrollment> Enrollments { get; set; }
 
     public string connString { get; }

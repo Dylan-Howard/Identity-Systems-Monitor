@@ -470,10 +470,10 @@ namespace prognosis_backend
             Console.WriteLine($"Referencing {orgs.Count} current orgs.");
             
             /* Setup org map */
-            var orgMap = new Dictionary<string, int>();
+            var classMap = new Dictionary<string, int>();
             foreach (Org o in orgs)
             {
-                orgMap.Add(o.Identifier, 1);
+                classMap.Add(o.Identifier, 1);
             }
 
             /* Process OneRosterOrg records */
@@ -487,7 +487,7 @@ namespace prognosis_backend
                 }
 
                 int orgStatus = 0;
-                orgMap.TryGetValue(orgRecord.Identifier, out orgStatus);
+                classMap.TryGetValue(orgRecord.Identifier, out orgStatus);
                 if (orgStatus == 0)
                 {
                     bool addSuccess = await OrgController.AddOrgRecord(settings, orgRecord, 3);
@@ -504,7 +504,7 @@ namespace prognosis_backend
                 }
                 else if (orgStatus == 1)
                 {
-                    orgMap[o.Identifier] = 0;
+                    classMap[o.Identifier] = 0;
 
                     bool updateSuccess = await OrgController.UpdateOrgRecord(settings, orgRecord, 3);
                     if (updateSuccess)
@@ -522,7 +522,7 @@ namespace prognosis_backend
             /* Set unmatched records to inactive */
             foreach (Org o in orgs)
             {
-                if (orgMap[o.Identifier] == 1)
+                if (classMap[o.Identifier] == 1)
                 {
                     o.Status = false;
 
@@ -541,7 +541,88 @@ namespace prognosis_backend
 
             return true;
         }
-        
+        public static async Task<bool> SyncOneRosterClasses(PrognosisConnectionSettings settings, OneRosterController oneRosterConnection)
+        {
+            List<OneRosterClass> oneRosterClasses = await oneRosterConnection.FetchOneRosterClassesAsync();
+            Console.WriteLine($"Received {oneRosterClasses.Count} classes.");
+
+            List<Class> classes = await ClassController.FetchClassRecords(settings, 3);
+            Console.WriteLine($"Referencing {classes.Count} current classes.");
+
+            List<Org> orgs = await OrgController.FetchOrgRecords(settings, 3);
+            Console.WriteLine($"Referencing {orgs.Count} current orgs.");
+            
+            /* Setup class map */
+            var classMap = new Dictionary<string, int>();
+            foreach (Class c in classes)
+            {
+                classMap.Add(c.Identifier, 1);
+            }
+
+            /* Setup org map */
+            var orgMap = new Dictionary<Guid, Guid>();
+            foreach (Org o in orgs)
+            {
+                orgMap.Add(Guid.Parse(o.Identifier), o.SourcedId);
+            }
+
+            /* Process OneRosterOrg records */
+            foreach (OneRosterClass c in oneRosterClasses)
+            {
+                Class? classRecord = c;
+
+                if (classRecord == null || classRecord.OrgSourcedId == Guid.Empty)
+                {
+                    continue;
+                }
+
+                Guid classOrg;
+                orgMap.TryGetValue(classRecord.OrgSourcedId, out classOrg);
+                classRecord.OrgSourcedId = classOrg;
+
+                int classStatus = 0;
+                classMap.TryGetValue(classRecord.Identifier, out classStatus);
+                if (classStatus == 0)
+                {
+                    bool addSuccess = await ClassController.AddClassRecord(settings, classRecord, 3);
+
+                    if (!addSuccess)
+                    {
+                        Console.WriteLine($"Failed to add {classRecord.Identifier} to orgs.");
+                        return false;
+                    }
+                }
+                else if (classStatus == 1)
+                {
+                    classMap[c.SourcedId] = 0;
+
+                    bool updateSuccess = await ClassController.UpdateClassRecord(settings, classRecord, 3);
+                    if (!updateSuccess)
+                    {
+                        Console.WriteLine($"Failed to update {classRecord.Identifier}.");
+                        return false;
+                    }
+                }
+            }
+
+            /* Set unmatched records to inactive */
+            foreach (Class c in classes)
+            {
+                if (classMap[c.Identifier] == 1)
+                {
+                    c.Status = false;
+
+                    bool updateSuccess = await ClassController.UpdateClassRecord(settings, c, 3);
+                    if (!updateSuccess)
+                    {
+                        Console.WriteLine($"Failed to update {c.Identifier}.");
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
         public static async Task<bool> SyncOneRoster(PrognosisConnectionSettings settings, OneRosterController oneRosterConnection)
         {
             Service? oneRosterService = await FetchServiceByName(settings, "One Roster", 3);
@@ -549,15 +630,19 @@ namespace prognosis_backend
                 return false;
             }
 
-            bool orgSyncSuccess = await SyncOneRosterOrgs(settings, oneRosterConnection);
-            if (!orgSyncSuccess)
+            // bool orgSyncSuccess = await SyncOneRosterOrgs(settings, oneRosterConnection);
+            // if (!orgSyncSuccess)
+            // {
+            //     Console.WriteLine("Failed to sync orgs");
+            //     return false;
+            // }
+
+            bool classSyncSuccess = await SyncOneRosterClasses(settings, oneRosterConnection);
+            if (!classSyncSuccess)
             {
-                Console.WriteLine("Failed to sync orgs");
+                Console.WriteLine("Failed to sync classes");
                 return false;
             }
-
-            // List<OneRosterClass> oneRosterClasses = await oneRoster.FetchOneRosterClassesAsync();
-            // Console.WriteLine($"Received {oneRosterClasses.Count} classes.");
             
             // List<OneRosterEnrollment> oneRosterEnrollments = await oneRoster.FetchOneRosterEnrollmentsAsync();
             // Console.WriteLine($"Received {oneRosterEnrollments.Count} enrollments.");
