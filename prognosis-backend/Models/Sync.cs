@@ -623,6 +623,121 @@ namespace prognosis_backend
 
             return true;
         }
+        public static async Task<bool> SyncOneRosterEnrollments(PrognosisConnectionSettings settings, OneRosterController oneRosterConnection)
+        {
+            List<OneRosterEnrollment> oneRosterEnrollments = await oneRosterConnection.FetchOneRosterEnrollmentsAsync();
+            Console.WriteLine($"Received {oneRosterEnrollments.Count} classes.");
+
+            /* Setup class map */
+            List<Class> classes = await ClassController.FetchClassRecords(settings, 3);
+            Console.WriteLine($"Referencing {classes.Count} current classes.");
+
+            var classMap = new Dictionary<string, Guid>();
+            foreach (Class c in classes)
+            {
+                classMap.Add(c.Identifier, c.SourcedId);
+            }
+
+            /* Setup user map */
+            Service? oneRosterService = await FetchServiceByName(settings, "One Roster", 3);
+            if (oneRosterService == null)
+            {
+                return false;
+            }
+
+            List<Link> users = await LinkController.FetchLinkRecords(settings, 3);
+            users = users.FindAll((u) => u.ServiceId == oneRosterService.ServiceId);
+            Console.WriteLine($"Referencing {users.Count} current users.");
+
+            var userMap = new Dictionary<Guid, Guid>();
+            foreach (Link u in users)
+            {
+                userMap.Add(Guid.Parse(u.ServiceIdentifier), u.LinkId);
+            }
+            
+            /* Setup enrollments map */
+            List<Enrollment> enrollments = await EnrollmentController.FetchEnrollmentRecords(settings, 3);
+            Console.WriteLine($"Referencing {enrollments.Count} current enrollments.");
+
+            var enrollmentMap = new Dictionary<string, int>();
+            foreach (Enrollment e in enrollments)
+            {
+                enrollmentMap.Add(e.Identifier, 1);
+            }
+
+            /* Process OneRosterOrg records */
+            foreach (OneRosterEnrollment e in oneRosterEnrollments)
+            {
+                Enrollment? enrollmentRecord = e;
+
+                if (enrollmentRecord == null
+                    || enrollmentRecord.UserSourcedId == Guid.Empty
+                    || string.IsNullOrEmpty(e.Class.SourcedId))
+                {
+                    Console.WriteLine("Failed to match enrollment to a class due to missing or no data.");
+                    continue;
+                }
+
+                Guid classSourcedId;
+                classMap.TryGetValue(e.Class.SourcedId, out classSourcedId);
+                enrollmentRecord.ClassSourcedId = classSourcedId;
+
+                Guid userSourcedId;
+                userMap.TryGetValue(enrollmentRecord.UserSourcedId, out userSourcedId);
+                enrollmentRecord.UserSourcedId = userSourcedId;
+
+                if (userSourcedId == Guid.Empty)
+                {
+                    Console.WriteLine("Failed to match enrollment to a linked user account.");
+                    Console.WriteLine(e.User.SourcedId);
+
+                    return false;
+                    continue;
+                }
+
+                int enrollmentStatus = 0;
+                enrollmentMap.TryGetValue(enrollmentRecord.Identifier, out enrollmentStatus);
+                if (enrollmentStatus == 0)
+                {
+                    bool addSuccess = await EnrollmentController.AddEnrollmentRecord(settings, enrollmentRecord, 3);
+
+                    if (!addSuccess)
+                    {
+                        Console.WriteLine($"Failed to add {enrollmentRecord.Identifier} to enrollments.");
+                        return false;
+                    }
+                }
+                else if (enrollmentStatus == 1)
+                {
+                    enrollmentMap[e.SourcedId] = 0;
+
+                    bool updateSuccess = await EnrollmentController.UpdateEnrollmentRecord(settings, enrollmentRecord, 3);
+                    if (!updateSuccess)
+                    {
+                        Console.WriteLine($"Failed to update {enrollmentRecord.Identifier}.");
+                        return false;
+                    }
+                }
+            }
+
+            /* Set unmatched records to inactive */
+            foreach (Enrollment e in enrollments)
+            {
+                if (enrollmentMap[e.Identifier] == 1)
+                {
+                    e.Status = false;
+
+                    bool updateSuccess = await EnrollmentController.UpdateEnrollmentRecord(settings, e, 3);
+                    if (!updateSuccess)
+                    {
+                        Console.WriteLine($"Failed to update {e.Identifier}.");
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
         public static async Task<bool> SyncOneRoster(PrognosisConnectionSettings settings, OneRosterController oneRosterConnection)
         {
             Service? oneRosterService = await FetchServiceByName(settings, "One Roster", 3);
@@ -637,15 +752,19 @@ namespace prognosis_backend
             //     return false;
             // }
 
-            bool classSyncSuccess = await SyncOneRosterClasses(settings, oneRosterConnection);
-            if (!classSyncSuccess)
+            // bool classSyncSuccess = await SyncOneRosterClasses(settings, oneRosterConnection);
+            // if (!classSyncSuccess)
+            // {
+            //     Console.WriteLine("Failed to sync classes");
+            //     return false;
+            // }
+
+            bool enrollmentSyncSuccess = await SyncOneRosterEnrollments(settings, oneRosterConnection);
+            if (!enrollmentSyncSuccess)
             {
-                Console.WriteLine("Failed to sync classes");
+                Console.WriteLine("Failed to sync enrollments");
                 return false;
             }
-            
-            // List<OneRosterEnrollment> oneRosterEnrollments = await oneRoster.FetchOneRosterEnrollmentsAsync();
-            // Console.WriteLine($"Received {oneRosterEnrollments.Count} enrollments.");
 
             string oneRosterServiceString = oneRosterService.ServiceId.ToString();
             // List<OneRosterUser> oneRosterUsers = await oneRosterConnection.FetchOneRosterUsersAsync();

@@ -8,34 +8,25 @@ namespace prognosis_backend.models
     {
         [Key]
         [JsonPropertyName("sourcedId")]
-        public string? SourcedId { get; set; }
+        public required string SourcedId { get; set; }
         [JsonPropertyName("status")]
-        public string? Status { get; set; }
+        public required string Status { get; set; }
         [JsonPropertyName("dateLastModified")]
         public DateTime DateLastModified { get; set; }
         [JsonPropertyName("role")]
         public string? Role { get; set; }
         [JsonPropertyName("primary")]
         public string? Primary { get; set; }
-        [JsonPropertyName("type")]
-        public string? Type { get; set; }
         [JsonPropertyName("beginDate")]
-        public DateOnly BeginDate { get; set; }
+        public DateOnly? BeginDate { get; set; }
         [JsonPropertyName("endDate")]
-        public DateOnly EndDate { get; set; }
+        public DateOnly? EndDate { get; set; }
         [JsonPropertyName("user")]
-        public OneRosterEnrollmentUser? User { get; set; }
-        [Column("user_sourced_id")]
-        public string? UserSourcedId { get; set; }
+        public required OneRosterEnrollmentUser User { get; set; }
         [JsonPropertyName("class")]
-        public OneRosterEnrollmentClass? Class { get; set; }
-        [Column("class_sourced_id")]
-        public string? ClassSourcedId { get; set; }
+        public required OneRosterEnrollmentClass Class { get; set; }
         [JsonPropertyName("school")]
         public OneRosterEnrollmentSchool? School { get; set; }
-        
-        [Column("org_sourced_id")]
-        public string? SchoolSourcedId { get; set; }
 
         public static implicit operator string?(OneRosterEnrollment? v)
         {
@@ -49,15 +40,32 @@ namespace prognosis_backend.models
             $"\tDateLastModified: {v.DateLastModified},\n" +
             $"\tBeginDate: {v.BeginDate},\n" +
             $"\tEndDate: {v.EndDate},\n" +
-            $"\tType: {v.Type},\n" +
           "}}";
 
           return objString;
         }
+        public static implicit operator Enrollment?(OneRosterEnrollment? v)
+        {
+            if (v == null) {
+                return null;
+            }
+
+            return new Enrollment {
+                Identifier = v.SourcedId,
+                Status = v.Status == "active",
+                DateLastModified = v.DateLastModified,
+                Role = v.Role ?? "",
+                Primary = v.Primary == "true",
+                BeginDate = v.BeginDate,
+                EndDate = v.EndDate,
+                UserSourcedId = v.User.SourcedId,
+                ClassSourcedId = Guid.Empty,
+            };
+        }
     }
     public class OneRosterEnrollmentClass {
         [JsonPropertyName("sourcedId")]
-        public string? SourcedId { get; set; }
+        public required string SourcedId { get; set; }
         [JsonPropertyName("type")]
         public string? Type { get; set; }
     }
