@@ -29,7 +29,7 @@ CREATE TABLE link (
   [link_id] UNIQUEIDENTIFIER NOT NULL PRIMARY KEY,
   [profile_id] UNIQUEIDENTIFIER FOREIGN KEY REFERENCES profile(profile_id),
   [service_id] UNIQUEIDENTIFIER FOREIGN KEY REFERENCES service(service_id),
-  [service_identifier] NVARCHAR(50) NOT NULL,
+  [service_identifier] NVARCHAR(64) NOT NULL,
   [first_name] NVARCHAR(50) NOT NULL,
   [last_name] NVARCHAR(50) NOT NULL,
   [email] NVARCHAR(128),
