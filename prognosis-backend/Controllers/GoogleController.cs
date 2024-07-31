@@ -11,7 +11,8 @@ namespace prognosis_backend
 {
     // Class to demonstrate the use of Directory users list API
 	class GoogleController
-    {
+  {
+      static readonly int _progressIncrement = 500;
         /* Global instance of the scopes required by this quickstart.
          If modifying these scopes, delete your previously saved token.json/ folder. */
         static string[] Scopes = { DirectoryService.Scope.AdminDirectoryUserReadonly };
@@ -104,7 +105,7 @@ namespace prognosis_backend
                 // Define parameters of request.
                 UsersResource.ListRequest request = service.Users.List();
                 request.Customer = "my_customer";
-                request.MaxResults = 50;
+                request.MaxResults = 100;
                 request.OrderBy = UsersResource.ListRequest.OrderByEnum.Email;
 
                 // List users.
@@ -114,7 +115,11 @@ namespace prognosis_backend
                     users = users.Concat(res.UsersValue).ToList();
 
                     request.PageToken = res.NextPageToken;
-                    Console.WriteLine($"{users.Count} users in list");
+
+                    if (users.Count % _progressIncrement == 0)
+                    {
+                        Console.WriteLine($"Fetched {res.UsersValue.Count} users. {users.Count} total now.");
+                    }
                 }
                 while (request.PageToken != null);
                 // while (request.PageToken != null && users.Count < 199);
@@ -143,7 +148,7 @@ namespace prognosis_backend
                 }
 
                 string? address = u.Addresses != null ? string.Join(";", addresses) : "";
-                string? phone = u.Phones != null ? string.Join(";", u.Phones) : "";
+                string? phone = u.Phones != null ? string.Join(";", u.Phones.FirstOrDefault((p) => p.Primary == true)?.Value) : null;
                 string? photoUrl = u.ThumbnailPhotoUrl != null ? u.ThumbnailPhotoUrl.ToString() : "";
 
                 links.Add(new Link {

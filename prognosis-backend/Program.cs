@@ -11,8 +11,6 @@ async System.Threading.Tasks.Task RunAsync(IConfiguration configuration)
 
     try
     {
-        // Console.WriteLine("Fetching Profiles from DB");
-
         string? proUrl = configuration.GetValue<string>("Connections:Prognosis:Url");
         string? proUser = configuration.GetValue<string>("Connections:Prognosis:Username");
         string? proPassword = configuration.GetValue<string>("Connections:Prognosis:Password");
@@ -27,14 +25,6 @@ async System.Threading.Tasks.Task RunAsync(IConfiguration configuration)
           Username = proUser,
           Password = proPassword,
         };
-
-        List<Profile> profiles = await SyncManager.FetchProfileRecords(proConnectionSettings, 3);
-
-        if (profiles.Count < 1)
-        {
-          Console.WriteLine("Sync encountered an error!");
-          return;
-        }
 
         // /* Example fetch and process for Rapid Identity */
         // Console.WriteLine("Fetching Users from Rapid Identity");
@@ -54,7 +44,7 @@ async System.Threading.Tasks.Task RunAsync(IConfiguration configuration)
         //   Password = riPassword,
         // };
 
-        // bool riSyncSuccessful = await SyncManager.SyncRapidIdentity(proConnectionSettings, riConnectionSettings, profiles);
+        // bool riSyncSuccessful = await SyncManager.SyncRapidIdentity(proConnectionSettings, riConnectionSettings);
 
         // if (riSyncSuccessful)
         // {
@@ -66,7 +56,7 @@ async System.Threading.Tasks.Task RunAsync(IConfiguration configuration)
         //   return;
         // }
 
-        /* Example fetch and process for Rapid Identity */
+        // /* Example fetch and process for Google */
         // Console.WriteLine("Fetching Links from Google");
         // bool googleSyncSuccessful = await SyncManager.SyncGoogle(proConnectionSettings);
 
@@ -80,6 +70,7 @@ async System.Threading.Tasks.Task RunAsync(IConfiguration configuration)
         //   return;
         // }
 
+        /* Example fetch and process for Google */
         Console.WriteLine("Fetching Linked Accounts from OneRoster");
 
         string? oneRosterBaseUrl = configuration.GetValue<string>("Connections:OneRoster:BaseUrl");
@@ -102,18 +93,6 @@ async System.Threading.Tasks.Task RunAsync(IConfiguration configuration)
         OneRosterController oneRoster = new OneRosterController(oneRosterConnectionSettings);
 
         bool oneRosterSyncSuccessful = await SyncManager.SyncOneRoster(proConnectionSettings, oneRoster);
-
-        // List<OneRosterOrg> oneRosterOrgs = await oneRoster.FetchOneRosterOrgsAsync();
-        // Console.WriteLine($"Received {oneRosterOrgs.Count} orgs.");
-
-        // List<OneRosterUser> oneRosterUsers = await oneRoster.FetchOneRosterUsersAsync();
-        // Console.WriteLine($"Received {oneRosterUsers.Count} users.");
-
-        // List<OneRosterClass> oneRosterClasses = await oneRoster.FetchOneRosterClassesAsync();
-        // Console.WriteLine($"Received {oneRosterClasses.Count} classes.");
-        
-        // List<OneRosterEnrollment> oneRosterEnrollments = await oneRoster.FetchOneRosterEnrollmentsAsync();
-        // Console.WriteLine($"Received {oneRosterEnrollments.Count} enrollments.");
         
         Console.WriteLine("Sync tasks finished");
     }

@@ -41,6 +41,8 @@ public class EnrollmentController
         try
         {
             var db = new PrognosisContext(settings);
+
+            Console.WriteLine(addEnrollment);
             
             await db.AddAsync(addEnrollment);
             await db.SaveChangesAsync();

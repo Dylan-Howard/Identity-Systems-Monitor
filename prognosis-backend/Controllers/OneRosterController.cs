@@ -18,6 +18,7 @@ namespace prognosis_backend.Controllers
         private OneRosterConnectionSettings _connectionSettings;
         private HttpClient? _client;
         public int fetchLimit;
+        readonly int _progressIncrement = 500;
         public OneRosterController(OneRosterConnectionSettings settings)
         {
             _connectionSettings = settings;
@@ -96,8 +97,11 @@ namespace prognosis_backend.Controllers
                 {
                     json = await response.Content.ReadFromJsonAsync<OneRosterUsersResponse>();
                     if (json != null) {
-                        Console.WriteLine($"Fetched {json.Users.Count} users. {users.Count} total now.");
                         users.AddRange(json.Users);
+                        if (users.Count % _progressIncrement == 0)
+                        {
+                            Console.WriteLine($"Fetched {json.Users.Count} users. {users.Count} total now.");
+                        }
                     }
                     offsetIndex += json != null ? json.Users.Count : fetchLimit;
                     lastItemCount = json != null ? json.Users.Count : 0;
@@ -156,8 +160,11 @@ namespace prognosis_backend.Controllers
                 {
                     json = await response.Content.ReadFromJsonAsync<OneRosterClassesResponse>();
                     if (json != null) {
-                        Console.WriteLine($"Fetched {json.Classes.Count} classes. {classes.Count} total now.");
                         classes.AddRange(json.Classes);
+                        if (classes.Count % _progressIncrement == 0)
+                        {
+                            Console.WriteLine($"Fetched {json.Classes.Count} classes. {classes.Count} total now.");
+                        }
                     }
                     offsetIndex += json != null ? json.Classes.Count : fetchLimit;
                     lastItemCount = json != null ? json.Classes.Count : 0;
@@ -192,8 +199,11 @@ namespace prognosis_backend.Controllers
                 {
                     json = await response.Content.ReadFromJsonAsync<OneRosterEnrollmentsResponse>();
                     if (json != null) {
-                        Console.WriteLine($"Fetched {json.Enrollments.Count} enrollments. {enrollments.Count} total now.");
                         enrollments.AddRange(json.Enrollments);
+                        if (enrollments.Count % _progressIncrement == 0)
+                        {
+                            Console.WriteLine($"Fetched {json.Enrollments.Count} enrollments. {enrollments.Count} total now.");
+                        }
                     }
                     offsetIndex += json != null ? json.Enrollments.Count : fetchLimit;
                     lastFetchCount = json != null ? json.Enrollments.Count : 0;
