@@ -11,6 +11,8 @@ import CloudIcon from '@mui/icons-material/Cloud';
 import UserIcon from '@mui/icons-material/Group';
 import TaskIcon from '@mui/icons-material/Task';
 import WorkIcon from '@mui/icons-material/Work';
+import ClassIcon from '@mui/icons-material/Class';
+import BusinessIcon from '@mui/icons-material/Business';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 
 import { iamTheme } from './Theme'
@@ -40,6 +42,18 @@ export const App = () => (
       icon={UserIcon}
     />
     <Resource
+      name="organizations"
+      list={ListGuesser}
+      show={ShowGuesser}
+      icon={BusinessIcon}
+    />
+    <Resource
+      name="classes"
+      list={ListGuesser}
+      show={ShowGuesser}
+      icon={ClassIcon}
+    />
+    <Resource
       name="jobs"
       create={JobCreate}
       list={JobList}
@@ -54,18 +68,6 @@ export const App = () => (
     />
     <Resource
       name="agents"
-      list={ListGuesser}
-      show={ShowGuesser}
-      icon={SupportAgentIcon}
-    />
-    <Resource
-      name="organizations"
-      list={ListGuesser}
-      show={ShowGuesser}
-      icon={SupportAgentIcon}
-    />
-    <Resource
-      name="classes"
       list={ListGuesser}
       show={ShowGuesser}
       icon={SupportAgentIcon}
