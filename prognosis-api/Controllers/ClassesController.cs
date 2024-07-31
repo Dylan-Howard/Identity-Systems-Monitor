@@ -22,12 +22,19 @@ namespace prognosis.Controllers
 
         // GET: api/Classes
         [HttpGet]
-        public async Task<ActionResult<ClassList>> GetClass()
+        public async Task<ActionResult<ClassList>> GetClass(int startIndex, int endIndex, string? sort, string? order, string? q)
         {
-            List<Class> clss = await _context.Classes.ToListAsync();
+            List<Class> classes = await _context.Classes.ToListAsync();
+
+            /* Handle array slicing */
+            if (endIndex == 0)
+            {
+              endIndex = startIndex + 10;
+            }
+
             return new ClassList {
-              Classes = clss,
-              Total = clss.Count,
+              Classes = classes.GetRange(startIndex, Math.Min(endIndex, classes.Count) - startIndex),
+              Total = classes.Count
             };
         }
 
@@ -42,7 +49,51 @@ namespace prognosis.Controllers
                 return NotFound();
             }
 
-            return cls;
+            /* Match class to enrolled users */
+            Service? oneRosterService = await _context.Services.FirstOrDefaultAsync((s) => s.Name == "One Roster");
+            if (oneRosterService == null)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+
+            List<Link> link = await _context.Links.Where((usr) => usr.ServiceId == oneRosterService.ServiceId).ToListAsync();
+            Dictionary<Guid, string> userMap = [];
+            foreach (Link l in link)
+            {
+                userMap.Add(l.LinkId, l.Email ?? "");
+            }
+
+            List<Enrollment> enrollments = await _context.Enrollments.Where((erl) => erl.ClassSourcedId == cls.SourcedId).ToListAsync();
+            List<ClassEnrollment> classEnrollments = [];
+
+            foreach (Enrollment e in enrollments)
+            {
+                classEnrollments.Add(new ClassEnrollment {
+                    UserSourcedId = e.UserSourcedId,
+                    Username = userMap[e.UserSourcedId],
+                    Role = e.Role,
+                    Primary = e.Primary,
+                    BeginDate = e.BeginDate,
+                    EndDate = e.EndDate
+                });
+            }
+
+            /* Match class to organization */
+            Org? classOrganization = await _context.Orgs.FirstOrDefaultAsync((o) => o.SourcedId == cls.OrgSourcedId);
+
+            return new ClassShow {
+                SourcedId = cls.SourcedId,
+                Identifier = cls.Identifier,
+                Status = cls.Status,
+                DateLastModified = cls.DateLastModified,
+                Title = cls.Title,
+                ClassType = cls.ClassType,
+                ClassCode = cls.ClassCode,
+                Location = cls.Location,
+                OrgSourcedId = cls.OrgSourcedId,
+                Enrollments = classEnrollments,
+                Organization = classOrganization?.Name
+            };
         }
 
         // PUT: api/Classes/5

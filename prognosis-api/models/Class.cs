@@ -61,6 +61,28 @@ public class Class
         return objString;
     }
 }
+public class ClassEnrollment
+{
+    [JsonPropertyName("userSourcedId")]
+    public Guid UserSourcedId { get; set; }
+    [JsonPropertyName("username")]
+    public required string Username { get; set; }
+    [JsonPropertyName("role")]
+    public required string Role { get; set; }
+    [JsonPropertyName("primary")]
+    public bool Primary { get; set; }
+    [JsonPropertyName("beginDate")]
+    public DateOnly? BeginDate { get; set; }
+    [JsonPropertyName("endDate")]
+    public DateOnly? EndDate { get; set; }
+}
+public class ClassShow : Class
+{
+    [JsonPropertyName("enrollments")]
+    public required List<ClassEnrollment> Enrollments { get; set; }
+    [JsonPropertyName("organization")]
+    public string? Organization { get; set; }
+}
 
 public class ProfileClass : Class
 {
