@@ -16,6 +16,10 @@ public class PrognosisContext : DbContext
     public DbSet<Agent> Agents { get; set; } = default!;
     public DbSet<Total> Totals { get; set; } = default!;
     public DbSet<Link> Links { get; set; } = default!;
+    public DbSet<Org> Orgs { get; set; } = default!;
+    public DbSet<Class> Classes { get; set; } = default!;
+    public DbSet<Enrollment> Enrollments { get; set; } = default!;
     public DbSet<Job> Jobs { get; set; } = default!;
     public DbSet<Task> Tasks { get; set; } = default!;
+
 }

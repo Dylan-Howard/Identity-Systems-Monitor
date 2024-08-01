@@ -35,7 +35,6 @@ export const Dashboard = () => {
 
   useEffect(() => {
     async function fetchData() {
-      console.log(`loading dashboard from ${apiUrl}`);
       try {
         const response = await fetchUtils.fetchJson(`${apiUrl}/dashboard`);
         const { json } = response;

@@ -5,9 +5,8 @@ using prognosis_backend.models;
 
 namespace prognosis_backend
 {   
-    class RapidIdentity()
+    class RapidIdentityController()
     {
-
         static HttpClient client = new HttpClient();
         static HttpClient PrepareClient(RapidIdentityConnectionSettings settings)
         {
@@ -39,13 +38,12 @@ namespace prognosis_backend
             return users;
         }
 
-        public static async Task<RapidIdentityUser> GetUserAsync(string userId, RapidIdentityConnectionSettings settings)
+        public static async Task<RapidIdentityUser?> GetUserAsync(string userId, RapidIdentityConnectionSettings settings)
         {
             client = PrepareClient(settings);
 
             RapidIdentityUser? user = null;
             HttpResponseMessage response = await client.GetAsync($"users/{userId}");
-            Console.WriteLine(response.Content.ToString());
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadFromJsonAsync<RapidIdentityUserResponse>();

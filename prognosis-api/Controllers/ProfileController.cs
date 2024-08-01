@@ -181,24 +181,73 @@ namespace prognosis.Controllers
                 return NotFound();
             }
 
+            /* Add Linked Accounts to Profile */
+            List<Service> services = await _context.Services.ToListAsync();
+            Dictionary<Guid, string> serviceMap = [];
+
+            foreach (Service s in services)
+            {
+                serviceMap.Add(s.ServiceId, s.Name);
+            }
+
             List<Link> links = await _context.Links.ToListAsync();
             links = links.FindAll((l) => l.ProfileId == profile.ProfileId);
 
             List<ProfileLink> profileLinks = [];
-            List<Service> services = await _context.Services.ToListAsync();
+
+            Console.WriteLine("Finding linked accounts");
 
             foreach (Link l in links)
             {
-                Service? linkService = services.FirstOrDefault((s) => s.ServiceId == l.ServiceId);
-                if (linkService == null)
+                string? serviceName = serviceMap[l.ServiceId];
+                if (serviceName == null)
                 {
                     continue;
                 }
 
                 profileLinks.Add(new ProfileLink {
-                    ServiceName = linkService.Name,
+                    ServiceName = serviceName,
                     LinkedAccount = l,
                 });
+            }
+
+            /* Add Classes to Profile */
+            List<ProfileClass> profileClasses = [];
+
+            Service? oneRosterService = await _context.Services
+                .FirstOrDefaultAsync((s) => s.Name == "One Roster");
+            Link? oneRosterlink = links.FirstOrDefault(
+                (l) => l.ServiceId == oneRosterService?.ServiceId);
+
+            if (oneRosterlink != null)
+            {
+                List<Enrollment> enrollments = await _context.Enrollments
+                    .Where((e) => e.UserSourcedId == oneRosterlink.LinkId)
+                    .ToListAsync();
+
+                Console.WriteLine(enrollments.Count);
+
+                List<Class> classes = await _context.Classes.ToListAsync();
+
+                classes = classes.FindAll((c) => enrollments.Find((e) => e.ClassSourcedId == c.SourcedId) != null);
+
+                List<Org> orgs = await _context.Orgs.ToListAsync();
+
+                foreach (Class c in classes)
+                {
+                    profileClasses.Add(new ProfileClass{
+                        SourcedId = c.SourcedId,
+                        Identifier = c.Identifier,
+                        Status = c.Status,
+                        DateLastModified = c.DateLastModified,
+                        Title = c.Title,
+                        ClassType = c.ClassType,
+                        ClassCode = c.ClassCode,
+                        Location = c.Location,
+                        OrgSourcedId = c.OrgSourcedId,
+                        Organization = orgs.FirstOrDefault((o) => o.SourcedId == c.OrgSourcedId)?.Name
+                    });
+                }
             }
 
             return new ProfileShow {
@@ -214,6 +263,7 @@ namespace prognosis.Controllers
               Locked = profile.Locked,
               MfaMethod = profile.MfaMethod,
               Links = profileLinks,
+              Classes = profileClasses,
             };
         }
 

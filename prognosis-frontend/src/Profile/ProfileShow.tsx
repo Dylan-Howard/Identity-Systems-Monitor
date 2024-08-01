@@ -7,7 +7,6 @@ import {
   Labeled,
   BooleanField,
   DateField,
-  FunctionField,
 } from 'react-admin';
 
 import {
@@ -17,13 +16,22 @@ import {
   Card,
   Stack,
   Chip,
+  Link,
+  TableContainer,
+  Table,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
   Typography,
+  Paper,
 } from "@mui/material";
 import { ProfileShowActions } from './ProfileShowActions';
 import { ProfilePhoto } from '../Modules/ProfilePhoto';
 import { ProfileSkeleton } from '../Skeleton/ProfileSkeleton';
 import { ProBreadcrumbs } from '../Modules/ProBreadcrumbs';
 import { ProfileShowCardActions } from './ProfileShowCardActions';
+import Class from '../Types/Class';
 
 const ProfileShowCard = ({ title, data, columns, system }: { title: string, data: any[], columns: number, system: string }) => {
 
@@ -45,7 +53,11 @@ const ProfileShowCard = ({ title, data, columns, system }: { title: string, data
     <Card sx={{ p: 2, mb: 2 }}>
       <Stack direction="row" justifyContent="space-between" spacing={2}>
         <Typography variant="h2" fontSize={18} fontWeight={600} gutterBottom>{title}</Typography>
-        <ProfileShowCardActions system={system} />
+        {
+          system === 'Google'
+            ? <ProfileShowCardActions system={system} />
+            : ''
+        }
       </Stack>
       
       <Grid container spacing={2}>
@@ -190,6 +202,49 @@ const ProfileShowLayout = () => {
                   system={lnk.serviceName}
                 />
               ))
+              : ''
+          }
+          {
+            record.classes && record.classes.length !== 0
+              ? (
+                <TableContainer component={Paper}>
+                  <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Title</TableCell>
+                        <TableCell>Status</TableCell>
+                        <TableCell>Date Last Modified</TableCell>
+                        <TableCell>Class Type</TableCell>
+                        <TableCell>Class Code</TableCell>
+                        <TableCell>School</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {record.classes.map((cls: Class) => (
+                        <TableRow
+                          key={cls.id}
+                          sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                        >
+                          <TableCell component="th" scope="row">
+                            <Link href={`./#/classes/${cls.id}/show`}>
+                              {cls.title}
+                            </Link>
+                          </TableCell>
+                          <TableCell>{cls.status}</TableCell>
+                          <TableCell>{cls.dateLastModified}</TableCell>
+                          <TableCell>{cls.classType}</TableCell>
+                          <TableCell>{cls.classCode}</TableCell>
+                          <TableCell>
+                            <Link href={`./#/organizations/${cls.school}/show`}>
+                              {cls.school}
+                            </Link>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              )
               : ''
           }
         </Container>

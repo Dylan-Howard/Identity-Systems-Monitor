@@ -11,10 +11,14 @@ import CloudIcon from '@mui/icons-material/Cloud';
 import UserIcon from '@mui/icons-material/Group';
 import TaskIcon from '@mui/icons-material/Task';
 import WorkIcon from '@mui/icons-material/Work';
+import ClassIcon from '@mui/icons-material/Class';
+import BusinessIcon from '@mui/icons-material/Business';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 
 import { iamTheme } from './Theme'
 import { JobList } from './Job/JobList';
+import { TaskList } from './Task/TaskList';
+import { JobCreate } from './Job/JobCreate';
 
 export const App = () => (
   <Admin
@@ -38,14 +42,27 @@ export const App = () => (
       icon={UserIcon}
     />
     <Resource
+      name="organizations"
+      list={ListGuesser}
+      show={ShowGuesser}
+      icon={BusinessIcon}
+    />
+    <Resource
+      name="classes"
+      list={ListGuesser}
+      show={ShowGuesser}
+      icon={ClassIcon}
+    />
+    <Resource
       name="jobs"
+      create={JobCreate}
       list={JobList}
       show={ShowGuesser}
       icon={WorkIcon}
     />
     <Resource
       name="tasks"
-      list={ListGuesser}
+      list={TaskList}
       show={ShowGuesser}
       icon={TaskIcon}
     />
