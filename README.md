@@ -15,3 +15,10 @@ By offering insights ("gnosis", knowledge in Greek) necessary for proactive meas
 * Database: Microsoft SQL Server
 
 IAM empowers organizations to streamline identity management, enhance security, and ensure data integrity.
+
+<div>
+  <img src="https://raw.githubusercontent.com/Dylan-Howard/Identity-Systems-Monitor/main/prognosis-documentation/icon-react.svg" height=64 />
+  <img src="https://raw.githubusercontent.com/Dylan-Howard/Identity-Systems-Monitor/main/prognosis-documentation/icon-reactadmin.svg" height=64 />
+  <img src="https://raw.githubusercontent.com/Dylan-Howard/Identity-Systems-Monitor/main/prognosis-documentation/icon-csharp.svg" height=64 />
+  <img src="https://raw.githubusercontent.com/Dylan-Howard/Identity-Systems-Monitor/main/prognosis-documentation/icon-dotnet.svg" height=64 />
+</div>
