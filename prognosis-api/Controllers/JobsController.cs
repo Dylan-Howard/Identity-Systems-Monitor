@@ -79,12 +79,13 @@ namespace prognosis.Controllers
         // POST: api/Jobs
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Job>> PostJob(Job Job)
+        public async Task<ActionResult<Job>> PostJob(Job job)
         {
-            _context.Jobs.Add(Job);
+            job.JobId = Guid.NewGuid();
+            _context.Jobs.Add(job);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(PostJob), new { id = Guid.NewGuid() }, Job);
+            return CreatedAtAction(nameof(PostJob), new { id = job.JobId }, job);
         }
 
         // DELETE: api/Jobs/5

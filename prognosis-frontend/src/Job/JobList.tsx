@@ -1,4 +1,4 @@
-import { BooleanField, Datagrid, DateField, List, TextField, ReferenceField } from 'react-admin';
+import { BooleanField, Datagrid, DateField, List, TextField } from 'react-admin';
 
 export const JobList = () => (
     <List>
@@ -7,7 +7,7 @@ export const JobList = () => (
             <TextField source="serviceId" />
             <DateField source="startDate" />
             <DateField source="nextRunTime" />
-            <DateField source="frequency" />
+            <TextField source="frequency" />
             <BooleanField source="active" />
         </Datagrid>
     </List>

@@ -1,6 +1,6 @@
 
 import { stringify } from 'query-string';
-import { fetchData } from './DataFetcher/DataFetcher';
+import { fetchData, postData } from './DataFetcher/DataFetcher';
 // import { devAgents, devProfiles, devServices, devTotals } from './devData';
 
 const apiUrl = import.meta.env.VITE_JSON_SERVER_URL;
@@ -87,9 +87,20 @@ export const dataProvider = {
     };
   },
 
-  create: async (resource: string, params: string) => {
+  create: async (resource: string, params: { data: Object }) => {
+    const url = `${apiUrl}/${resource}`;
     console.log(`${resource}, ${params}`);
-    return { data: [] };
+
+    const { json } = await postData(
+      url,
+      {
+          id: '00000000-0000-0000-0000-000000000000',
+          ...params.data,
+      },
+    );
+
+    console.log(json);
+    return { data: json };
   },
 
   update: async (resource: string, params: { id: string }) => {

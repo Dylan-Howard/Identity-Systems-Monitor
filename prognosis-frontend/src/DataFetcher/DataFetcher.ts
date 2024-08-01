@@ -17,3 +17,16 @@ export const fetchData = async (url: string, options: fetchUtils.Options = {}) =
   }
   return fetchUtils.fetchJson(url, options);
 }
+
+export const postData = async (url: string, data: Object, options: fetchUtils.Options = {}) => {
+  console.log(data);
+  
+  return fetchUtils.fetchJson(
+    url,
+    {
+      method: 'POST',
+      body: JSON.stringify(data),
+      ...options,
+    }
+  );
+}
