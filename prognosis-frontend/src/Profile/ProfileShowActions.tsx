@@ -59,6 +59,7 @@ export const ProfileShowActions = () => {
               + `I've set this employee's password to ${json.data.password}\n\n`
               + `Could you verify that they are able to sign in and have access to everything that they need?\n\n`
               + "Additionally, could you please assist them in completing their challenge questions and recording these answers in a secure location?\n\n"
+              + "They may change their password using these instructions (https://warrencounty.incidentiq.com/kb/articles/b014ef89-9b34-409c-9f25-56faa317f5bb) and update their security questions using these instructions (https://warrencounty.incidentiq.com/kb/articles/13b5e7be-944b-466c-9456-a409e37d993e).\n\n"
               + "Thank you!\n\n"
               + "Dylan Howard"
             ),

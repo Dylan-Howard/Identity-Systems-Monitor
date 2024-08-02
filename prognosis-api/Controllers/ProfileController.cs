@@ -37,6 +37,8 @@ namespace prognosis.Controllers
                         q.ToLower()
                     ) == 0
                 );
+
+                
             }
             else if (status != null)
             {

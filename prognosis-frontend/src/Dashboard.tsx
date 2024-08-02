@@ -6,6 +6,7 @@ import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 
 import { ScoreCard } from './Modules/ScoreCard';
 import { Chart } from './Modules/Chart';
@@ -65,8 +66,9 @@ export const Dashboard = () => {
       >
         <Toolbar />
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-          <Grid container spacing={3}>
-            {/* Totals */}
+          {/* Totals */}
+          <Typography variant="h2" sx={{ fontSize: 32, fontWeight: 600, mb: 2 }}>Totals</Typography>
+          <Grid container spacing={3} sx={{ mb: 4 }}>
             {
               metrics.totals.map((tot) => (
                 <Grid item sm={4} md={3} key={`${tot.title}-total`}>
@@ -74,7 +76,10 @@ export const Dashboard = () => {
                 </Grid>
               ))
             }
-            {/* Trends */}
+          </Grid>
+          {/* Trends */}
+          <Typography variant="h2" sx={{ fontSize: 32, fontWeight: 600, mb: 2 }}>Trends</Typography>
+          <Grid container spacing={3} sx={{ mb: 4 }}>
             {
               metrics.trends.map((trn) => (
                 <Grid item xs={12} md={6} key={`${trn.title}-trend`}>
@@ -82,7 +87,10 @@ export const Dashboard = () => {
                 </Grid>
               ))
             }
-            {/* Recent Changes */}
+          </Grid>
+          {/* Recent Changes */}
+          <Typography variant="h2" sx={{ fontSize: 32, fontWeight: 600, mb: 2 }}>Recent Changes</Typography>
+          <Grid container spacing={3} sx={{ mb: 4 }}>
             <Grid item xs={12}>
               <ChangeSnippet data={metrics.changes} />
             </Grid>

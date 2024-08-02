@@ -1,5 +1,3 @@
-
-// import { createTheme } from '@mui/material/styles';
 import { defaultTheme } from 'react-admin';
 
 export const iamTheme = {
@@ -33,31 +31,10 @@ export const iamTheme = {
       main: '#E07A5F',
       dark: '#C5A982',
       contrastText: '#000',
-    }
-    // background: '#F4F1DE',
+    },
   },
   components: {
     ...defaultTheme.components,
-    // AppBar:{
-    //   styleOverrides: {
-    //     root: {
-    //         backgroundColor: "#F8F8FC",
-    //         },
-    //     }
-    // },
-    // sidebar: {
-
-    // },
-    // RaDatagrid: {
-    //     styleOverrides: {
-    //       root: {
-    //           // backgroundColor: "#FAF9F0",
-    //           // "& .RaDatagrid-headerCell": {
-    //           //     backgroundColor: "MistyRose",
-    //           // },
-    //       }
-    //    }
-    // },
     MuiTypography: {
       defaultProps: {
         variantMapping: {
@@ -74,6 +51,5 @@ export const iamTheme = {
         },
       },
     },
-}
-
+  }
 };

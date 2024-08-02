@@ -52,7 +52,7 @@ const ProfileShowCard = ({ title, data, columns, system }: { title: string, data
   return (
     <Card sx={{ p: 2, mb: 2 }}>
       <Stack direction="row" justifyContent="space-between" spacing={2}>
-        <Typography variant="h2" fontSize={18} fontWeight={600} gutterBottom>{title}</Typography>
+        <Typography variant="h2" fontSize='1.2rem' fontWeight={600} gutterBottom>{title}</Typography>
         {
           system === 'Google'
             ? <ProfileShowCardActions system={system} />
@@ -66,8 +66,8 @@ const ProfileShowCard = ({ title, data, columns, system }: { title: string, data
             <Grid item key={`col-${col[0][0]}`} sm={6}>
               {
                 col.map((fld: string[]) => (
-                  <Labeled key={`fld-${fld[0]}`} label={fld[0]} fullWidth>
-                    <Typography sx={{ fontSize: '0.875rem', }}>{fld[1] ? fld[1] : 'not defined'}</Typography>
+                  <Labeled key={`fld-${fld[0]}`} label={fld[0]} fullWidth sx={{ fontSize: '1.1rem' }}>
+                    <Typography sx={{ fontSize: '1rem', }}>{fld[1] ? fld[1] : 'not defined'}</Typography>
                   </Labeled>
                 ))
               }
@@ -121,45 +121,45 @@ const ProfileShowLayout = () => {
                 <ProfilePhoto url={photoUrl} firstName={record.firstName} lastName={record.lastName} />
               </Grid>
               <Grid item sm={6}>
-                <Labeled label="Id" fullWidth>
-                  <TextField source="id" />
+                <Labeled label="Id" fullWidth sx={{ fontSize: '1.1rem' }}>
+                  <TextField source="id" sx={{ fontSize: '1.1rem' }} />
                 </Labeled>
-                <Labeled label="Username" fullWidth>
-                  <TextField source="email" />
+                <Labeled label="Username" fullWidth sx={{ fontSize: '1.1rem' }}>
+                  <TextField source="email" sx={{ fontSize: '1.1rem' }} />
                 </Labeled>
-                <Labeled label="First Name" fullWidth>
-                  <TextField source="firstName" emptyText="not defined" />
+                <Labeled label="First Name" fullWidth sx={{ fontSize: '1.1rem' }}>
+                  <TextField source="firstName" emptyText="not defined" sx={{ fontSize: '1.1rem' }} />
                 </Labeled>
                 <Labeled label="Last Name" fullWidth>
-                  <TextField source="lastName" emptyText="not defined" />
+                  <TextField source="lastName" emptyText="not defined" sx={{ fontSize: '1.1rem' }} />
                 </Labeled>
                 <Stack direction="row" spacing={2}>
-                  <Labeled label="Status" fullWidth>
-                    <BooleanField source="status" emptyText="not defined" />
+                  <Labeled label="Status" fullWidth sx={{ fontSize: '1.1rem' }}>
+                    <BooleanField source="status" emptyText="not defined" sx={{ fontSize: '1.1rem' }} />
                   </Labeled>
                   {
-                    isError.disabled ? <Chip color="error" size="small" label="Warning" /> : ''
+                    isError.disabled ? <Chip color="error" size="small" label="Warning" sx={{ fontSize: '1.1rem' }} /> : ''
                   }
                 </Stack>
                 <Stack direction="row" spacing={2}>
-                  <Labeled label="Claim Flag">
-                    <BooleanField source="claimed" />
+                  <Labeled label="Claim Flag" sx={{ fontSize: '1.1rem' }}>
+                    <BooleanField source="claimed" sx={{ fontSize: '1.1rem' }} />
                   </Labeled>
                   {
                     isError.unclaimed ? <Chip color="error" size="small" label="Warning" /> : ''
                   }
                 </Stack>
                 <Stack direction="row" spacing={2}>
-                  <Labeled label="Locked">
-                    <BooleanField source="locked" />
+                  <Labeled label="Locked" sx={{ fontSize: '1.1rem' }}>
+                    <BooleanField source="locked" sx={{ fontSize: '1.1rem' }} />
                   </Labeled>
                   {
                     isError.locked ? <Chip color="error" size="small" label="Warning" /> : ''
                   }
                 </Stack>
                 <Stack direction="row" spacing={2}>
-                  <Labeled label="MFA Method">
-                    <TextField source="mfaMethod" />
+                  <Labeled label="MFA Method" sx={{ fontSize: '1.1rem' }}>
+                    <TextField source="mfaMethod" sx={{ fontSize: '1.1rem' }} />
                   </Labeled>
                   {
                     isError.noMfa ? <Chip color="error" size="small" label="Warning" /> : ''
@@ -180,11 +180,11 @@ const ProfileShowLayout = () => {
                     }
                   />
                 </Labeled> */}
-                <Labeled label="Pending Rename" fullWidth>
-                  <TextField source="idautoPersonRenameUsername" emptyText="not defined" />
+                <Labeled label="Pending Rename" fullWidth sx={{ fontSize: '1.1rem' }}>
+                  <TextField source="idautoPersonRenameUsername" emptyText="not defined" sx={{ fontSize: '1.1rem' }} />
                 </Labeled>
-                <Labeled label="Rename Flagged Date" fullWidth>
-                  <DateField source="idautoPersonRenameFlagDate" emptyText="not defined" / >
+                <Labeled label="Rename Flagged Date" fullWidth sx={{ fontSize: '1.1rem' }}>
+                  <DateField source="idautoPersonRenameFlagDate" emptyText="not defined" sx={{ fontSize: '1.1rem' }} / >
                 </Labeled>
               </Grid>
             </Grid>

@@ -6,6 +6,7 @@ import { Dashboard } from './Dashboard';
 import { ServiceList } from './Service/ServiceList';
 import { ProfileList } from './Profile/ProfileList';
 import { ProfileShow } from './Profile/ProfileShow';
+import { OrganizationShow } from './Organization/OrganizationShow';
 
 import CloudIcon from '@mui/icons-material/Cloud';
 import UserIcon from '@mui/icons-material/Group';
@@ -44,7 +45,7 @@ export const App = () => (
     <Resource
       name="organizations"
       list={ListGuesser}
-      show={ShowGuesser}
+      show={OrganizationShow}
       icon={BusinessIcon}
     />
     <Resource
