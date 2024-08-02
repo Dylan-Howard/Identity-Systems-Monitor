@@ -8,12 +8,7 @@ import {
   SearchInput,
   TextField
 } from 'react-admin';
-
-import { Chip } from '@mui/material';
-
-const QuickFilter = ({ source, label, defaultValue }: { source: string, label: string, defaultValue: any }) => {
-  return <Chip sx={{ marginBottom: 1 }} label={label} />;
-};
+import QuickFilter from '../Modules/QuickFilter';
 
 const profileFilters = [
   <SearchInput source="q" alwaysOn />,

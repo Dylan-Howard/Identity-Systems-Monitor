@@ -20,6 +20,7 @@ import { JobList } from './Job/JobList';
 import { TaskList } from './Task/TaskList';
 import { JobCreate } from './Job/JobCreate';
 import { OneRosterClass } from './OneRosterClass/OneRosterClassShow';
+import { OrganizationList } from './Organization/OrganizationList';
 
 export const App = () => (
   <Admin
@@ -44,7 +45,7 @@ export const App = () => (
     />
     <Resource
       name="organizations"
-      list={ListGuesser}
+      list={OrganizationList}
       show={OrganizationShow}
       icon={BusinessIcon}
     />
