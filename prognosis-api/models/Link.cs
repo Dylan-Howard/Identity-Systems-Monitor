@@ -87,3 +87,12 @@ public class ProfileLink
     [JsonPropertyName("linkedAccount")]
     public required Link LinkedAccount { get; set; }
 }
+
+public class LinkList
+{
+    [Key]
+    [JsonPropertyName("data")]
+    public required List<Link> Links { get; set; }
+    [JsonPropertyName("total")]
+    public int Total { get; set; }
+}

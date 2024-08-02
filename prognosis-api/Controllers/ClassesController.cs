@@ -22,6 +22,52 @@ namespace prognosis.Controllers
             _context = context;
         }
 
+        private async Task<int> GetEnrollmentCount(Class cls)
+        {
+            List<Enrollment> enrollments = await _context.Enrollments
+                .Where((e) => e.ClassSourcedId == cls.SourcedId)
+                .ToListAsync();
+
+            return enrollments.Count;
+        }
+
+        private async Task<IEnumerable<ClassEnrollment>> GetClassEnrollments(Class cls)
+        {
+            List<ClassEnrollment> classEnrollments = [];
+
+            /* Get One Roster Service */
+            Service? oneRosterService = await _context.Services.FirstOrDefaultAsync((s) => s.Name == "One Roster");
+            if (oneRosterService == null)
+            {
+                return [];
+            }
+
+            /* Get One Roster Users */
+            List<Link> links = await _context.Links.Where((usr) => usr.ServiceId == oneRosterService.ServiceId).ToListAsync();
+            if (links.Count == 0)
+            {
+                return [];
+            }
+
+            Dictionary<Guid, string> userMap = [];
+            foreach (Link l in links)
+            {
+                userMap.Add(l.LinkId, l.Email ?? "");
+            }
+
+            /* Get One Roster Enrollments */
+            List<Enrollment> enrollments = await _context.Enrollments.Where((erl) => erl.ClassSourcedId == cls.SourcedId).ToListAsync();
+
+            return enrollments.Select((erl) => new ClassEnrollment {
+                UserSourcedId = erl.UserSourcedId,
+                Username = userMap[erl.UserSourcedId],
+                Role = erl.Role,
+                Primary = erl.Primary,
+                BeginDate = erl.BeginDate,
+                EndDate = erl.EndDate,
+            });
+        }
+
         // GET: api/Classes
         [HttpGet]
         public async Task<ActionResult<ClassList>> GetClass(int startIndex, int endIndex, string? sort, string? order, string? q, Guid? orgSourcedId)
@@ -57,13 +103,9 @@ namespace prognosis.Controllers
                     OrgSourcedId = c.OrgSourcedId,
                 }).ToList();
             
-            var erls = new EnrollmentsController (_context);
             foreach (ClassListItem c in classList)
             {
-                var enrollments = await erls.GetEnrollment(null, c.SourcedId);
-                EnrollmentList? classEnrollments = enrollments.Value;
-
-                c.EnrollmentCount = classEnrollments != null ? classEnrollments.Enrollments.Count : 0;
+                c.EnrollmentCount = await GetEnrollmentCount(c);
             }
 
             return new ClassList {
@@ -74,7 +116,7 @@ namespace prognosis.Controllers
 
         // GET: api/Classes/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Prognosis.Models.Class>> GetClass(Guid id)
+        public async Task<ActionResult<Class>> GetClass(Guid id)
         {
             var cls = await _context.Classes.FindAsync(id);
 
@@ -83,36 +125,9 @@ namespace prognosis.Controllers
                 return NotFound();
             }
 
-            /* Match class to enrolled users */
-            Service? oneRosterService = await _context.Services.FirstOrDefaultAsync((s) => s.Name == "One Roster");
-            if (oneRosterService == null)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            /* Match class to enrollments and organization */
+            var classEnrollments = await GetClassEnrollments(cls);
 
-            List<Link> link = await _context.Links.Where((usr) => usr.ServiceId == oneRosterService.ServiceId).ToListAsync();
-            Dictionary<Guid, string> userMap = [];
-            foreach (Link l in link)
-            {
-                userMap.Add(l.LinkId, l.Email ?? "");
-            }
-
-            List<Enrollment> enrollments = await _context.Enrollments.Where((erl) => erl.ClassSourcedId == cls.SourcedId).ToListAsync();
-            List<ClassEnrollment> classEnrollments = [];
-
-            foreach (Enrollment e in enrollments)
-            {
-                classEnrollments.Add(new ClassEnrollment {
-                    UserSourcedId = e.UserSourcedId,
-                    Username = userMap[e.UserSourcedId],
-                    Role = e.Role,
-                    Primary = e.Primary,
-                    BeginDate = e.BeginDate,
-                    EndDate = e.EndDate,
-                });
-            }
-
-            /* Match class to organization */
             Org? classOrganization = await _context.Orgs.FirstOrDefaultAsync((o) => o.SourcedId == cls.OrgSourcedId);
 
             return new ClassShow {
@@ -125,7 +140,7 @@ namespace prognosis.Controllers
                 ClassCode = cls.ClassCode,
                 Location = cls.Location,
                 OrgSourcedId = cls.OrgSourcedId,
-                Enrollments = classEnrollments,
+                Enrollments = classEnrollments.ToList(),
                 Organization = classOrganization?.Name,
             };
         }
