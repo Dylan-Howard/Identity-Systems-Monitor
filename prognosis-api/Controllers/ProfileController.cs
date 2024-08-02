@@ -27,18 +27,9 @@ namespace prognosis.Controllers
             List<Profile> profiles = await _context.Profiles.ToListAsync();
             
             /* Handle filter*/
-            Console.WriteLine("Filtering users");
-            Console.WriteLine($"Status: {status}");
             if (q != null)
             {
-                profiles = profiles.FindAll(
-                    (p) => String.Compare(
-                        p.Email.Substring(0, Math.Min(q.Length, p.Email.Length)).ToLower(),
-                        q.ToLower()
-                    ) == 0
-                );
-
-                
+                profiles = profiles.FindAll((p) => p.Email.ToLower().StartsWith(q.ToLower()));
             }
             else if (status != null)
             {
@@ -59,7 +50,6 @@ namespace prognosis.Controllers
                     (p) => String.Compare(p.MfaMethod.ToLower(), mfaMethod.ToLower()) == 0
                 );
             }
-            
 
             /* Handle Sorting */
             switch (sort)
@@ -124,7 +114,6 @@ namespace prognosis.Controllers
                         profiles = profiles.OrderBy((p) => p.Status).ToList();
                     }
                     break;
-                ;
                 case "claimed":
                     if (order == "DESC")
                     {
@@ -135,7 +124,6 @@ namespace prognosis.Controllers
                         profiles = profiles.OrderBy((p) => p.Claimed).ToList();
                     }
                     break;
-                ;
                 case "locked":
                     if (order == "DESC")
                     {
@@ -146,7 +134,6 @@ namespace prognosis.Controllers
                         profiles = profiles.OrderBy((p) => p.Locked).ToList();
                     }
                     break;
-                ;
                 case "mfaMethod":
                     if (order == "DESC")
                     {
@@ -157,13 +144,12 @@ namespace prognosis.Controllers
                         profiles = profiles.OrderBy((p) => p.MfaMethod).ToList();
                     }
                     break;
-                ;
             }
 
             /* Handle array slicing */
             if (endIndex == 0)
             {
-              endIndex = 10;
+              endIndex = startIndex + 10;
             }
 
             return new ProfileList {

@@ -22,11 +22,68 @@ namespace prognosis.Controllers
 
         // GET: api/Organizations
         [HttpGet]
-        public async Task<ActionResult<OrgList>> GetOrganization()
+        public async Task<ActionResult<OrgList>> GetOrganization(int startIndex, int endIndex, string sort, string order, string? q)
         {
             List<Org> orgs = await _context.Orgs.ToListAsync();
+
+            if (q != null)
+            {
+                orgs = orgs.FindAll((o) => o.Name.ToLower().Contains(q.ToLower()));
+            }
+
+            /* Handle Sorting */
+            switch (sort)
+            {
+                case "name":
+                    if (order == "DESC")
+                    {
+                        orgs = orgs.OrderByDescending((o) => o.Name).ToList();
+                    }
+                    else
+                    {
+                        orgs = orgs.OrderBy((o) => o.Name).ToList();
+                    }
+                    break;
+                case "status":
+                    if (order == "DESC")
+                    {
+                        orgs = orgs.OrderByDescending((o) => o.Status).ToList();
+                    }
+                    else
+                    {
+                        orgs = orgs.OrderBy((o) => o.Status).ToList();
+                    }
+                    break;
+                case "dateLastModified":
+                    if (order == "DESC")
+                    {
+                        orgs = orgs.OrderByDescending((o) => o.DateLastModified).ToList();
+                    }
+                    else
+                    {
+                        orgs = orgs.OrderBy((o) => o.DateLastModified).ToList();
+                    }
+                    break;
+                case "type":
+                    if (order == "DESC")
+                    {
+                        orgs = orgs.OrderByDescending((o) => o.Type).ToList();
+                    }
+                    else
+                    {
+                        orgs = orgs.OrderBy((o) => o.Type).ToList();
+                    }
+                    break;
+            }
+
+            /* Handle array slicing */
+            if (endIndex == 0)
+            {
+              endIndex = startIndex + 10;
+            }
+
             return new OrgList {
-              Orgs = orgs,
+              Orgs = orgs.GetRange(startIndex, Math.Min(endIndex, orgs.Count) - startIndex),
               Total = orgs.Count,
             };
         }
