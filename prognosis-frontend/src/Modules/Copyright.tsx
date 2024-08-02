@@ -1,9 +1,10 @@
-import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
+import Typography from '@mui/material/Typography';
 
-export function Copyright(props: any) {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
+export const Copyright = (props: any) => (
+  <Box sx={{ mt: 2, mb: 2 }} {...props}>
+    <Typography variant="body2" color="text.secondary" align="center">
       {'Made with care by '}
       <Link color="inherit" href="https://github.com/Dylan-Howard/">
         Dylan Howard
@@ -11,5 +12,5 @@ export function Copyright(props: any) {
       {new Date().getFullYear()}
       {'.'}
     </Typography>
-  );
-}
+  </Box>
+);

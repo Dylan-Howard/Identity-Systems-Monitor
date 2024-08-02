@@ -1,5 +1,5 @@
 
-type Class = {
+type OneRosterClass = {
   id: string,
   identifier: string,
   status: boolean,
@@ -20,4 +20,4 @@ type Class = {
   }
 }
 
-export default Class;
+export default OneRosterClass;

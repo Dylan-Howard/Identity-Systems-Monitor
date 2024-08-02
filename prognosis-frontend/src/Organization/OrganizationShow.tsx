@@ -20,6 +20,8 @@ import {
 } from '@mui/material';
 import { ProBreadcrumbs } from '../Modules/ProBreadcrumbs';
 import { ProfileSkeleton } from '../Skeleton/ProfileSkeleton';
+import { ClassesCard } from '../Modules/ClassesCard';
+import { Copyright } from '../Modules/Copyright';
 
 export const OrganizationShowLayout = () => {
   const { isLoading } = useShowContext();
@@ -90,6 +92,12 @@ export const OrganizationShowLayout = () => {
                 </Stack> */}
             </Grid>
           </Card>
+          {
+            record.classes && record.classes.length !== 0
+              ? <ClassesCard classes={record.classes} />
+              : ''
+          }
+          <Copyright />
         </Container>
     </SimpleShowLayout>
   </ShowBase>
