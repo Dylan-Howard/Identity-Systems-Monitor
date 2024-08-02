@@ -33,7 +33,7 @@ namespace prognosis.Controllers
 
         // GET: api/Organizations/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Org>> GetOrganization(Guid id)
+        public async Task<ActionResult<OrgShow>> GetOrganization(Guid id)
         {
             var org = await _context.Orgs.FindAsync(id);
 
@@ -42,7 +42,22 @@ namespace prognosis.Controllers
                 return NotFound();
             }
 
-            return org;
+            List<Class> orgClasses = await _context.Classes.ToListAsync();
+            orgClasses = orgClasses.FindAll((c) => c.OrgSourcedId == org.SourcedId);
+
+            return new OrgShow {
+                SourcedId = org.SourcedId,
+                Status = org.Status,
+                DateLastModified = org.DateLastModified,
+                Name = org.Name,
+                Identifier = org.Identifier,
+                Type = org.Type,
+                Address = org.Address,
+                City = org.City,
+                State = org.State,
+                Zip = org.Zip,
+                Classes = orgClasses,
+            };
         }
 
         // PUT: api/Organizations/5

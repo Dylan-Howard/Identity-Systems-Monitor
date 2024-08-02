@@ -22,14 +22,23 @@ namespace prognosis.Controllers
 
         // GET: api/Classes
         [HttpGet]
-        public async Task<ActionResult<ClassList>> GetClass(int startIndex, int endIndex, string? sort, string? order, string? q)
+        public async Task<ActionResult<ClassList>> GetClass(int startIndex, int endIndex, string? sort, string? order, string? q, Guid? orgSourcedId)
         {
             List<Class> classes = await _context.Classes.ToListAsync();
+
+            if (orgSourcedId != null && orgSourcedId != Guid.Empty)
+            {
+                classes = classes.FindAll((c) => c.OrgSourcedId == orgSourcedId);
+            }
 
             /* Handle array slicing */
             if (endIndex == 0)
             {
               endIndex = startIndex + 10;
+            }
+            else if (endIndex == -1)
+            {
+                endIndex = classes.Count;
             }
 
             return new ClassList {
@@ -40,7 +49,7 @@ namespace prognosis.Controllers
 
         // GET: api/Classes/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Class>> GetClass(Guid id)
+        public async Task<ActionResult<Prognosis.Models.Class>> GetClass(Guid id)
         {
             var cls = await _context.Classes.FindAsync(id);
 

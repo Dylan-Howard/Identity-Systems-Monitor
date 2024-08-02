@@ -76,3 +76,9 @@ public class OrgList
     [JsonPropertyName("total")]
     public int Total { get; set; }
 }
+
+public class OrgShow: Org
+{
+    [JsonPropertyName("classes")]
+    public required List<Class> Classes { get; set; }
+}
