@@ -1,4 +1,13 @@
 
+export type ClassEnrollment = {
+  userSourcedId: string,
+  username: string,
+  role: string,
+  primary: boolean,
+  beginDate: Date,
+  endDate: Date,
+};
+
 type OneRosterClass = {
   id: string,
   identifier: string,
@@ -10,14 +19,7 @@ type OneRosterClass = {
   location: string,
   school: string,
   organization?: string,
-  enrollments?: {
-    userSourcedId: string,
-    username: string,
-    role: string,
-    primary: boolean,
-    beginDate: Date,
-    endDate: Date,
-  }
-}
+  enrollments: ClassEnrollment[],
+};
 
 export default OneRosterClass;

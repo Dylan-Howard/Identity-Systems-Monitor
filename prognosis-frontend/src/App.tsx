@@ -1,7 +1,6 @@
 import { Admin, Resource, ListGuesser, ShowGuesser } from 'react-admin';
 import { authProvider } from './authProvider';
 import { dataProvider } from './dataProvider';
-// import { RenameList } from './Rename/RenameList';
 import { Dashboard } from './Dashboard';
 import { ServiceList } from './Service/ServiceList';
 import { ProfileList } from './Profile/ProfileList';
@@ -20,6 +19,7 @@ import { iamTheme } from './Theme'
 import { JobList } from './Job/JobList';
 import { TaskList } from './Task/TaskList';
 import { JobCreate } from './Job/JobCreate';
+import { OneRosterClass } from './OneRosterClass/OneRosterClassShow';
 
 export const App = () => (
   <Admin
@@ -51,7 +51,7 @@ export const App = () => (
     <Resource
       name="classes"
       list={ListGuesser}
-      show={ShowGuesser}
+      show={OneRosterClass}
       icon={ClassIcon}
     />
     <Resource
