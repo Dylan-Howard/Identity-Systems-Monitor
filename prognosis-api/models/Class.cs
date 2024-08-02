@@ -89,12 +89,17 @@ public class ProfileClass : Class
     [JsonPropertyName("organization")]
     public string? Organization { get; set; }
 }
+public class ClassListItem : Class
+{
 
+    [JsonPropertyName("enrollmentCount")]
+    public int EnrollmentCount { get; set;}
+}
 public class ClassList
 {
     [Key]
     [JsonPropertyName("data")]
-    public required List<Class> Classes { get; set; }
+    public required List<ClassListItem> Classes { get; set; }
     [JsonPropertyName("total")]
     public int Total { get; set; }
 }

@@ -61,3 +61,11 @@ public class Enrollment
     }
 }
 
+public class EnrollmentList
+{
+    [Key]
+    [JsonPropertyName("data")]
+    public required List<Enrollment> Enrollments { get; set; }
+    [JsonPropertyName("total")]
+    public int Total { get; set; }
+}

@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using NuGet.Protocol;
 using Prognosis.Models;
 
 namespace prognosis.Controllers
@@ -41,8 +43,31 @@ namespace prognosis.Controllers
                 endIndex = classes.Count;
             }
 
+            /* Convert to Class List */
+            List<ClassListItem> classList = classes.GetRange(startIndex, Math.Min(endIndex, classes.Count) - startIndex)
+                .Select((c) => new ClassListItem {
+                    SourcedId = c.SourcedId,
+                    Identifier = c.Identifier,
+                    Status = c.Status,
+                    DateLastModified = c.DateLastModified,
+                    Title = c.Title,
+                    ClassType = c.ClassType,
+                    ClassCode = c.ClassCode,
+                    Location = c.Location,
+                    OrgSourcedId = c.OrgSourcedId,
+                }).ToList();
+            
+            var erls = new EnrollmentsController (_context);
+            foreach (ClassListItem c in classList)
+            {
+                var enrollments = await erls.GetEnrollment(null, c.SourcedId);
+                EnrollmentList? classEnrollments = enrollments.Value;
+
+                c.EnrollmentCount = classEnrollments != null ? classEnrollments.Enrollments.Count : 0;
+            }
+
             return new ClassList {
-              Classes = classes.GetRange(startIndex, Math.Min(endIndex, classes.Count) - startIndex),
+              Classes = classList,
               Total = classes.Count
             };
         }
@@ -83,7 +108,7 @@ namespace prognosis.Controllers
                     Role = e.Role,
                     Primary = e.Primary,
                     BeginDate = e.BeginDate,
-                    EndDate = e.EndDate
+                    EndDate = e.EndDate,
                 });
             }
 
@@ -101,7 +126,7 @@ namespace prognosis.Controllers
                 Location = cls.Location,
                 OrgSourcedId = cls.OrgSourcedId,
                 Enrollments = classEnrollments,
-                Organization = classOrganization?.Name
+                Organization = classOrganization?.Name,
             };
         }
 
