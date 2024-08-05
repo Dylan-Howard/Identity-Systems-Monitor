@@ -25,8 +25,27 @@ namespace prognosis.Controllers
         public async Task<ActionResult<JobList>> GetJob()
         {
             List<Job> jobs = await _context.Jobs.ToListAsync();
+
+            List<Service> services = await _context.Services.ToListAsync();
+            Dictionary<Guid, string> serviceMap = [];
+
+            foreach (Service s in services)
+            {
+                serviceMap.Add(s.ServiceId, s.Name);
+            }
+
+            List<JobListItem> jobItems = jobs.Select((j) => new JobListItem {
+                JobId = j.JobId,
+                ServiceId = j.ServiceId,
+                StartDate = j.StartDate,
+                NextRunTime = j.NextRunTime,
+                Frequency = j.Frequency,
+                Active = j.Active,
+                ServiceName = serviceMap[j.ServiceId],
+            }).ToList();
+
             return new JobList {
-              Jobs = jobs,
+              Jobs = jobItems,
               Total = jobs.Count,
             };
         }

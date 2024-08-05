@@ -22,6 +22,7 @@ import { JobCreate } from './Job/JobCreate';
 import { OneRosterClass } from './OneRosterClass/OneRosterClassShow';
 import { OrganizationList } from './Organization/OrganizationList';
 import { OneRosterClassList } from './OneRosterClass/OneRosterClassList';
+import ServiceCreate from './Service/ServiceCreate';
 
 export const App = () => (
   <Admin
@@ -35,6 +36,7 @@ export const App = () => (
   >
     <Resource
       name="services"
+      create={ServiceCreate}
       list={ServiceList}
       show={ShowGuesser}
       icon={CloudIcon}

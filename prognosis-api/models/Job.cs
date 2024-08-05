@@ -28,11 +28,17 @@ public class Job
     public bool Active { get; set; }
 }
 
+public class JobListItem : Job
+{
+    [Key]
+    [JsonPropertyName("serviceName")]
+    public required string ServiceName { get; set; }
+}
 public class JobList
 {
     [Key]
     [JsonPropertyName("data")]
-    public required List<Job> Jobs { get; set; }
+    public required List<JobListItem> Jobs { get; set; }
     [JsonPropertyName("total")]
     public int Total { get; set; }
 }

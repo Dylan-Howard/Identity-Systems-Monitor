@@ -15,6 +15,21 @@ public class Service
     [Column("name")]
     [JsonPropertyName("name")]
     public required string Name { get; set; }
+    [Column("service_type")]
+    [JsonPropertyName("serviceType")]
+    public string? ServiceType { get; set; }
+    [Column("username")]
+    [JsonPropertyName("username")]
+    public string? Username { get; set; }
+    [Column("password")]
+    [JsonPropertyName("password")]
+    public string? Password { get; set; }
+    [Column("base_url")]
+    [JsonPropertyName("baseUrl")]
+    public string? BaseUrl { get; set; }
+    [Column("token_url")]
+    [JsonPropertyName("tokenUrl")]
+    public string? TokenUrl { get; set; }
 }
 
 public class ServiceList
