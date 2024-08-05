@@ -89,6 +89,15 @@ namespace prognosis.Controllers
                 endIndex = classes.Count;
             }
 
+            /* Build OrgMap for Organization name */
+            List<Org> orgs = await _context.Orgs.ToListAsync();
+            Dictionary<Guid, string> orgMap = [];
+
+            foreach (Org o in orgs)
+            {
+                orgMap.Add(o.SourcedId, o.Name);
+            }
+
             /* Convert to Class List */
             List<ClassListItem> classList = classes.GetRange(startIndex, Math.Min(endIndex, classes.Count) - startIndex)
                 .Select((c) => new ClassListItem {
@@ -101,6 +110,7 @@ namespace prognosis.Controllers
                     ClassCode = c.ClassCode,
                     Location = c.Location,
                     OrgSourcedId = c.OrgSourcedId,
+                    Organization = orgMap[c.OrgSourcedId]
                 }).ToList();
             
             foreach (ClassListItem c in classList)

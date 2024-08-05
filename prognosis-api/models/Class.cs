@@ -94,6 +94,8 @@ public class ClassListItem : Class
 
     [JsonPropertyName("enrollmentCount")]
     public int EnrollmentCount { get; set;}
+    [JsonPropertyName("organization")]
+    public required string Organization { get; set; }
 }
 public class ClassList
 {
