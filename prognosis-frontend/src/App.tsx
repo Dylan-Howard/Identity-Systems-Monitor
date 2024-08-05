@@ -1,4 +1,4 @@
-import { Admin, Resource, ListGuesser, ShowGuesser } from 'react-admin';
+import { Admin, Resource, ListGuesser, ShowGuesser, NotFound } from 'react-admin';
 import { authProvider } from './authProvider';
 import { dataProvider } from './dataProvider';
 import { Dashboard } from './Dashboard';
@@ -21,10 +21,12 @@ import { TaskList } from './Task/TaskList';
 import { JobCreate } from './Job/JobCreate';
 import { OneRosterClass } from './OneRosterClass/OneRosterClassShow';
 import { OrganizationList } from './Organization/OrganizationList';
+import { OneRosterClassList } from './OneRosterClass/OneRosterClassList';
 
 export const App = () => (
   <Admin
     authProvider={authProvider}
+    catchAll={NotFound}
     // @ts-ignore 
     dataProvider={dataProvider}
     dashboard={Dashboard}
@@ -51,7 +53,7 @@ export const App = () => (
     />
     <Resource
       name="classes"
-      list={ListGuesser}
+      list={OneRosterClassList}
       show={OneRosterClass}
       icon={ClassIcon}
     />
