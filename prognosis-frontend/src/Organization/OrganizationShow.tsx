@@ -45,7 +45,7 @@ export const OrganizationShowLayout = () => {
     <SimpleShowLayout>
       <Container maxWidth="xl">
         <Box sx={{ mb: 2 }}>
-          <ProBreadcrumbs parts={['organizations', record.id.toString()]}/>
+          <ProBreadcrumbs parts={['organizations', record.name.toString()]}/>
         </Box>
           {/* Organization */}
           <Typography variant="h1" fontSize={48} fontWeight={600} sx={{ mb: 2 }}>{record.name}</Typography>

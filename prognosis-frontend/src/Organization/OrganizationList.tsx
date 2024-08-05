@@ -11,9 +11,9 @@ import QuickFilter from '../Modules/QuickFilter';
 
 const organizationsFilters = [
   <SearchInput source="q" alwaysOn />,
-  <QuickFilter source="q" label="Elementary School" defaultValue="elementary" />,
-  <QuickFilter source="q" label="Middle School" defaultValue="middle" />,
-  <QuickFilter source="q" label="High School" defaultValue="high" />,
+  // <QuickFilter source="q" label="Elementary School" defaultValue="elementary" />,
+  // <QuickFilter source="q" label="Middle School" defaultValue="middle" />,
+  // <QuickFilter source="q" label="High School" defaultValue="high" />,
 ];
 
 export const OrganizationList = () => (

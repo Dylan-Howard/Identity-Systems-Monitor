@@ -1,6 +1,11 @@
 CREATE TABLE service (
   [service_id] UNIQUEIDENTIFIER NOT NULL PRIMARY KEY,
-  [name] NVARCHAR(32) NOT NULL
+  [name] NVARCHAR(32) NOT NULL,
+  [service_type] NVARCHAR(16) NOT NULL,
+  [base_url] NVARCHAR(128) NOT NULL,
+  [token_url] NVARCHAR(128) NOT NULL,
+  [username] NVARCHAR(128) NOT NULL,
+  [password] NVARCHAR(128) NOT NULL,
 );
 
 CREATE TABLE total (
