@@ -94,16 +94,20 @@ export const OneRosterClassLayout = () => {
               </Grid>
             </Grid>
           </Card>
-          <Typography variant="h2" sx={{ fontSize: 32, fontWeight: 600, mb: 2 }}>Teachers</Typography>
           {
             record.enrollments && record.enrollments.length !== 0
-              ? <EnrollmentsCard enrollments={record.enrollments} role="teacher" />
+              ? <Box component="section">
+                  <Typography variant="h2" sx={{ fontSize: 32, fontWeight: 600, mb: 2 }}>Teachers</Typography>
+                  <EnrollmentsCard enrollments={record.enrollments} role="teacher" />
+                </Box>
               : ''
           }
-          <Typography variant="h2" sx={{ fontSize: 32, fontWeight: 600, mb: 2 }}>Students</Typography>
           {
             record.enrollments && record.enrollments.length !== 0
-              ? <EnrollmentsCard enrollments={record.enrollments} role="student" />
+              ? <Box component="section">
+                  <Typography variant="h2" sx={{ fontSize: 32, fontWeight: 600, mb: 2 }}>Students</Typography>
+                  <EnrollmentsCard enrollments={record.enrollments} role="student" />
+                </Box>
               : ''
           }
           <Copyright />
