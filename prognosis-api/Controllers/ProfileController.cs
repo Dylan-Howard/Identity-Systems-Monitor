@@ -15,6 +15,23 @@ namespace prognosis.Controllers
     {
         private readonly PrognosisContext _context;
 
+        private bool ProfileMatches(Profile profile, string search)
+        {
+            string[] terms = search.Split(" ");
+
+            for (var i = 0; i < terms.Length; i++)
+            {
+                if (!profile.Email.ToLower().StartsWith(terms[i].ToLower())
+                    && !profile.FirstName.ToLower().StartsWith(terms[i].ToLower())
+                    && !profile.LastName.ToLower().StartsWith(terms[i].ToLower()))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         public ProfilesController(PrognosisContext context)
         {
             _context = context;
@@ -29,7 +46,7 @@ namespace prognosis.Controllers
             /* Handle filter*/
             if (q != null)
             {
-                profiles = profiles.FindAll((p) => p.Email.ToLower().StartsWith(q.ToLower()));
+                profiles = profiles.FindAll((p) => ProfileMatches(p, q));
             }
             else if (status != null)
             {
