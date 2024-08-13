@@ -74,6 +74,11 @@ namespace prognosis.Controllers
         {
             List<Class> classes = await _context.Classes.ToListAsync();
 
+            /* Handle filter*/
+            if (q != null)
+            {
+                classes = classes.FindAll((c) => c.Title.ToLower().StartsWith(q.ToLower()));
+            }
             if (orgSourcedId != null && orgSourcedId != Guid.Empty)
             {
                 classes = classes.FindAll((c) => c.OrgSourcedId == orgSourcedId);
