@@ -67,8 +67,8 @@ CREATE TABLE task (
   [task_id] UNIQUEIDENTIFIER NOT NULL PRIMARY KEY,
   [job_id] UNIQUEIDENTIFIER FOREIGN KEY REFERENCES job(job_id),
   [start_time] DATETIME NOT NULL,
-  [end_time] DATETIME NOT NULL,
-  [notes] NVARCHAR(100) NOT NULL,
+  [end_time] DATETIME,
+  [notes] NVARCHAR(100),
   [active] BIT NOT NULL
 );
 
