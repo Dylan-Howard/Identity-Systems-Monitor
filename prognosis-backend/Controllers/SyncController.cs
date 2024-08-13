@@ -14,7 +14,8 @@ namespace prognosis_backend
             if (riService == null) {
                 return false;
             }
-            List<RapidIdentityUser> users = await RapidIdentityController.GetUsersAsync(riSettings);
+            var riController = new RapidIdentityController(riSettings);
+            List<RapidIdentityUser> users = await riController.GetUsersAsync();
 
             int totalRecords = 0;   
             foreach (RapidIdentityUser user in users)
@@ -534,26 +535,26 @@ namespace prognosis_backend
         {
             Console.WriteLine("Processing OneRoster data");
 
-            // bool userSyncSuccess = await SyncOneRosterUsers(settings, oneRosterConnection);
-            // if (!userSyncSuccess)
-            // {
-            //     Console.WriteLine("Failed to sync users");
-            //     return false;
-            // }
+            bool userSyncSuccess = await SyncOneRosterUsers(settings, oneRosterConnection);
+            if (!userSyncSuccess)
+            {
+                Console.WriteLine("Failed to sync users");
+                return false;
+            }
 
-            // bool orgSyncSuccess = await SyncOneRosterOrgs(settings, oneRosterConnection);
-            // if (!orgSyncSuccess)
-            // {
-            //     Console.WriteLine("Failed to sync orgs");
-            //     return false;
-            // }
+            bool orgSyncSuccess = await SyncOneRosterOrgs(settings, oneRosterConnection);
+            if (!orgSyncSuccess)
+            {
+                Console.WriteLine("Failed to sync orgs");
+                return false;
+            }
 
-            // bool classSyncSuccess = await SyncOneRosterClasses(settings, oneRosterConnection);
-            // if (!classSyncSuccess)
-            // {
-            //     Console.WriteLine("Failed to sync classes");
-            //     return false;
-            // }
+            bool classSyncSuccess = await SyncOneRosterClasses(settings, oneRosterConnection);
+            if (!classSyncSuccess)
+            {
+                Console.WriteLine("Failed to sync classes");
+                return false;
+            }
 
             bool enrollmentSyncSuccess = await SyncOneRosterEnrollments(settings, oneRosterConnection);
             if (!enrollmentSyncSuccess)

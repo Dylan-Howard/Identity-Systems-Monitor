@@ -64,7 +64,7 @@ namespace prognosis_backend.Controllers
 
             _client = new HttpClient
             {
-              BaseAddress = new Uri(_connectionSettings.BaseUrl)
+                BaseAddress = new Uri(_connectionSettings.BaseUrl)
             };
 
             _client.DefaultRequestHeaders.Accept.Clear();

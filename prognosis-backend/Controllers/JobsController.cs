@@ -36,4 +36,21 @@ public static class JobsController
         
         return jobs;
     }
+    public static async Task<bool> PutJob(PrognosisConnectionSettings settings, Job job)
+    {
+        try
+        {
+            var db = new PrognosisContext(settings);
+            db.Entry(job).State = EntityState.Modified;
+            
+            await db.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException e)
+        {
+            Console.WriteLine(e.Message);
+            return false;
+        }
+
+        return true;
+    }
 }

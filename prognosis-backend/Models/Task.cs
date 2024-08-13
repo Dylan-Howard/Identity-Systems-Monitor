@@ -12,13 +12,13 @@ public class Task
     [Column("job_id")]
     public Guid JobId { get; set; }
     [Column("start_time")]
-    public DateTime StartTime { get; set; }
+    public required DateTime StartTime { get; set; }
     [Column("end_time")]
-    public DateTime EndTime { get; set; }
+    public DateTime? EndTime { get; set; }
     [Column("notes")]
-    public required string Notes { get; set; }
+    public string? Notes { get; set; }
     [Column("active")]
-    public bool Active { get; set; }
+    public required bool Active { get; set; }
 
     public static implicit operator string?(Task? v)
     {

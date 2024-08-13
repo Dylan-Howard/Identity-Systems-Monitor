@@ -1,32 +1,54 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
+using Microsoft.AspNetCore.Mvc;
 using prognosis_backend.models;
 
-namespace prognosis_backend
+namespace prognosis_backend.Controllers
 {   
-    class RapidIdentityController()
+    class RapidIdentityController : ControllerBase
     {
-        static HttpClient client = new HttpClient();
-        static HttpClient PrepareClient(RapidIdentityConnectionSettings settings)
+        private RapidIdentityConnectionSettings _connectionSettings;
+        private HttpClient? _client;
+        public int fetchLimit;
+        public RapidIdentityController(RapidIdentityConnectionSettings settings)
         {
-            client.BaseAddress = new Uri(settings.Url);
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(
+            _connectionSettings = settings;
+            fetchLimit = 500;
+        }
+        private HttpClient? PrepareClient()
+        {
+            if (_client != null)
+            {
+                return _client;
+            }
+
+            _client = new HttpClient
+            {
+                BaseAddress = new Uri(_connectionSettings.Url)
+            };
+
+            _client.DefaultRequestHeaders.Accept.Clear();
+            _client.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue("application/json"));
             string encoded = System.Convert.ToBase64String(Encoding.GetEncoding("ISO-8859-1")
-                .GetBytes(settings.Username + ":" + settings.Password));
-            client.DefaultRequestHeaders.Add("Authorization", "Basic " + encoded);
+                .GetBytes(_connectionSettings.Username + ":" + _connectionSettings.Password));
+            _client.DefaultRequestHeaders.Add("Authorization", "Basic " + encoded);
 
-            return client;
+            return _client;
         }
         
-        public static async Task<List<RapidIdentityUser>> GetUsersAsync(RapidIdentityConnectionSettings settings)
+        public async Task<List<RapidIdentityUser>> GetUsersAsync()
         {
-            client = PrepareClient(settings);
+            _client = PrepareClient();
+
+            if (_client == null)
+            {
+                return [];
+            }
 
             List<RapidIdentityUser> users = [];
-            HttpResponseMessage response = await client.GetAsync("users");
+            HttpResponseMessage response = await _client.GetAsync("users");
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadFromJsonAsync<RapidIdentityUsersResponse>();
@@ -38,12 +60,17 @@ namespace prognosis_backend
             return users;
         }
 
-        public static async Task<RapidIdentityUser?> GetUserAsync(string userId, RapidIdentityConnectionSettings settings)
+        public async Task<RapidIdentityUser?> GetUserAsync(string userId)
         {
-            client = PrepareClient(settings);
+            _client = PrepareClient();
+
+            if (_client == null)
+            {
+                return null;
+            }
 
             RapidIdentityUser? user = null;
-            HttpResponseMessage response = await client.GetAsync($"users/{userId}");
+            HttpResponseMessage response = await _client.GetAsync($"users/{userId}");
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadFromJsonAsync<RapidIdentityUserResponse>();
