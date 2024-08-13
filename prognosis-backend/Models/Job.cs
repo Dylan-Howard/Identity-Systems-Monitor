@@ -19,4 +19,22 @@ public class Job
     public required string Frequency { get; set; }
     [Column("active")]
     public bool Active { get; set; }
+
+    public static implicit operator string?(Job? v)
+    {
+        if (v == null) {
+            return null;
+        }
+
+        string objString = $"{{\n" +
+            $"\tJobId: {v.JobId},\n" +
+            $"\tServiceId: {v.ServiceId},\n" +
+            $"\tStartDate: {v.StartDate},\n" +
+            $"\tNextRuntime: {v.NextRuntime},\n" +
+            $"\tFrequency: {v.Frequency},\n" +
+            $"\tActive: {v.Active},\n" +
+            "}}";
+
+        return objString;
+    }
 }

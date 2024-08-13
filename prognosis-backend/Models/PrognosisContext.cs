@@ -8,6 +8,8 @@ public class PrognosisContext : DbContext
     public DbSet<Profile> Profiles { get; set; }
     public DbSet<Total> Totals { get; set; }
     public DbSet<Service> Services { get; set; }
+    public DbSet<Job> Jobs { get; set; }
+    public DbSet<prognosis_backend.models.Task> Tasks { get; set; }
     public DbSet<Link> Links { get; set; }
     public DbSet<Org> Orgs { get; set; }
     public DbSet<Class> Classes { get; set; }

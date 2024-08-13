@@ -11,8 +11,6 @@ public class Task
     public Guid TaskId { get; set; }
     [Column("job_id")]
     public Guid JobId { get; set; }
-    [Column("service_id")]
-    public Guid ServiceId { get; set; }
     [Column("start_time")]
     public DateTime StartTime { get; set; }
     [Column("end_time")]
@@ -21,4 +19,22 @@ public class Task
     public required string Notes { get; set; }
     [Column("active")]
     public bool Active { get; set; }
+
+    public static implicit operator string?(Task? v)
+    {
+        if (v == null) {
+            return null;
+        }
+
+        string objString = $"{{\n" +
+            $"\tTaskId: {v.TaskId},\n" +
+            $"\tJobId: {v.JobId},\n" +
+            $"\tStartTime: {v.StartTime},\n" +
+            $"\tEndTime: {v.EndTime},\n" +
+            $"\tNotes: {v.Notes},\n" +
+            $"\tActive: {v.Active},\n" +
+            "}}";
+
+        return objString;
+    }
 }

@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
-using prognosis_backend.models;
 using prognosis_backend;
 using Microsoft.Extensions.DependencyInjection;
 using prognosis_backend.Controllers;
+using prognosis_backend.models;
 
 async System.Threading.Tasks.Task RunAsync(IConfiguration configuration)
 {
@@ -11,6 +11,7 @@ async System.Threading.Tasks.Task RunAsync(IConfiguration configuration)
 
     try
     {
+        /* Initialize Prognosis Connection */
         string? proUrl = configuration.GetValue<string>("Connections:Prognosis:Url");
         string? proUser = configuration.GetValue<string>("Connections:Prognosis:Username");
         string? proPassword = configuration.GetValue<string>("Connections:Prognosis:Password");
@@ -25,6 +26,18 @@ async System.Threading.Tasks.Task RunAsync(IConfiguration configuration)
           Username = proUser,
           Password = proPassword,
         };
+
+        var jobs = await JobsController.GetJobs(proConnectionSettings);
+        if (jobs == null)
+        {
+            Console.WriteLine("Unable to load scheduled jobs");
+            return;
+        }
+
+        foreach (Job j in jobs)
+        {
+            Console.WriteLine(j);
+        }
 
         // /* Example fetch and process for Rapid Identity */
         // Console.WriteLine("Fetching Users from Rapid Identity");
@@ -70,31 +83,31 @@ async System.Threading.Tasks.Task RunAsync(IConfiguration configuration)
         //   return;
         // }
 
-        /* Example fetch and process for Google */
-        Console.WriteLine("Fetching Linked Accounts from OneRoster");
+        // /* Example fetch and process for Google */
+        // Console.WriteLine("Fetching Linked Accounts from OneRoster");
 
-        string? oneRosterBaseUrl = configuration.GetValue<string>("Connections:OneRoster:BaseUrl");
-        string? oneRosterTokenUrl = configuration.GetValue<string>("Connections:OneRoster:TokenUrl");
-        string? oneRosterClientId = configuration.GetValue<string>("Connections:OneRoster:ClientId");
-        string? oneRosterClientSecret = configuration.GetValue<string>("Connections:OneRoster:ClientSecret");
-        if (oneRosterBaseUrl == null || oneRosterTokenUrl == null || oneRosterClientId == null || oneRosterClientSecret == null)
-        {
-            Console.WriteLine("Unable to load connection settings for OneRoster Api");
-            return;
-        }
+        // string? oneRosterBaseUrl = configuration.GetValue<string>("Connections:OneRoster:BaseUrl");
+        // string? oneRosterTokenUrl = configuration.GetValue<string>("Connections:OneRoster:TokenUrl");
+        // string? oneRosterClientId = configuration.GetValue<string>("Connections:OneRoster:ClientId");
+        // string? oneRosterClientSecret = configuration.GetValue<string>("Connections:OneRoster:ClientSecret");
+        // if (oneRosterBaseUrl == null || oneRosterTokenUrl == null || oneRosterClientId == null || oneRosterClientSecret == null)
+        // {
+        //     Console.WriteLine("Unable to load connection settings for OneRoster Api");
+        //     return;
+        // }
 
-        OneRosterConnectionSettings oneRosterConnectionSettings = new OneRosterConnectionSettings {
-            BaseUrl = oneRosterBaseUrl,
-            TokenUrl = oneRosterTokenUrl,
-            ClientId = oneRosterClientId,
-            ClientSecret = oneRosterClientSecret,
-        };
+        // OneRosterConnectionSettings oneRosterConnectionSettings = new OneRosterConnectionSettings {
+        //     BaseUrl = oneRosterBaseUrl,
+        //     TokenUrl = oneRosterTokenUrl,
+        //     ClientId = oneRosterClientId,
+        //     ClientSecret = oneRosterClientSecret,
+        // };
 
-        OneRosterController oneRoster = new OneRosterController(oneRosterConnectionSettings);
+        // OneRosterController oneRoster = new OneRosterController(oneRosterConnectionSettings);
 
-        bool oneRosterSyncSuccessful = await SyncManager.SyncOneRoster(proConnectionSettings, oneRoster);
+        // bool oneRosterSyncSuccessful = await SyncManager.SyncOneRoster(proConnectionSettings, oneRoster);
         
-        Console.WriteLine("Sync tasks finished");
+        // Console.WriteLine("Sync tasks finished");
     }
     catch (Exception e)
     {
