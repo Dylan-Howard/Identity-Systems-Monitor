@@ -85,7 +85,7 @@ const ProfileShowLayout = () => {
     return <ProfileSkeleton />;
   }
 
-  const photoUrl = record.links ? record.links.map((lnk: any) => lnk.photoUrl).pop() : '';
+  const photoUrl = record.links ? record.links.map((lnk: any) => lnk.linkedAccount.photoUrl).pop() : '';
 
   const isError = {
     unclaimed: !record.claimed,
@@ -101,8 +101,6 @@ const ProfileShowLayout = () => {
           <Box sx={{ mb: 2 }}>
             <ProBreadcrumbs parts={['profiles', record.email.toString()]}/>
           </Box>
-          
-
           {/* Profile */}
           <Typography variant="h1" fontSize={48} fontWeight={600} sx={{ mb: 2 }}>{`${record.firstName} ${record.lastName}`}</Typography>
           <Card sx={{ p: 2, mb: 2 }}>
