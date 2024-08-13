@@ -1,9 +1,13 @@
-import { BooleanField, Datagrid, DateField, FunctionField, List, NumberField, TextField } from 'react-admin';
+import { BooleanField, Datagrid, DateField, FunctionField, List, NumberField, SearchInput, TextField } from 'react-admin';
 import OneRosterClass from '../Types/OneRosterClass';
 import Link from '@mui/material/Link';
 
+const classFilters = [
+  <SearchInput source="q" alwaysOn />,
+];
+
 export const OneRosterClassList = () => (
-  <List>
+  <List filters={classFilters}>
     <Datagrid rowClick="show">
       <TextField source="title" />
       <TextField source="identifier" />
