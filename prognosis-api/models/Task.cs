@@ -19,7 +19,7 @@ public class Task
     public DateTime StartTime { get; set; }
     [Column("end_time")]
     [JsonPropertyName("endTime")]
-    public DateTime EndTime { get; set; }
+    public DateTime? EndTime { get; set; }
     [Column("notes")]
     [JsonPropertyName("notes")]
     public string? Notes { get; set; }
