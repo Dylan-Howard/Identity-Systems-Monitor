@@ -28,11 +28,19 @@ public class Task
     public bool Active { get; set; }
 }
 
+public class TaskListItem : Task
+{
+    [JsonPropertyName("serviceId")]
+    public required Guid ServiceId { get; set; }
+    [JsonPropertyName("serviceName")]
+    public required string ServiceName { get; set; }
+}
+
 public class TaskList
 {
     [Key]
     [JsonPropertyName("data")]
-    public required List<Task> Tasks { get; set; }
+    public required List<TaskListItem> Tasks { get; set; }
     [JsonPropertyName("total")]
     public int Total { get; set; }
 }
