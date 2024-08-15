@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import './ProfilePhoto.css';
@@ -23,10 +24,11 @@ export const ProfilePhoto = (
         !url
         ? <Typography fontSize={64} sx={{ color: '#6E7BFA' }}>{initials}</Typography>
         : (
-          <img
+          <Box
+            component="img"
+            sx={{ width: '100%', objectFit: 'contain' }}
+            alt={`${firstName} ${lastName}'s profile photo`}
             src={url}
-            alt ={`${firstName} ${lastName}'s profile photo`}
-            className="UserProfilePhoto"
           />
         )
       }
