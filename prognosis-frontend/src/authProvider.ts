@@ -1,5 +1,4 @@
 import { AuthProvider } from "react-admin";
-import { devAgents } from "./Data/devData";
 
 export const authProvider: AuthProvider = {
   // send username and password to the auth server and get back credentials
@@ -8,7 +7,9 @@ export const authProvider: AuthProvider = {
       return Promise.reject();
     }
 
-    const user = devAgents.find((agt) => agt.username === username && agt.password === password);
+    const user = {
+      username: 'dylan'
+    };
 
     if (!user) {
       return Promise.reject();

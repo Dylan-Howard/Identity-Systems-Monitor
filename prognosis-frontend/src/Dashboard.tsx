@@ -11,7 +11,6 @@ import Typography from '@mui/material/Typography';
 import { ScoreCard } from './Modules/ScoreCard';
 import { Chart } from './Modules/Chart';
 import { Copyright } from './Modules/Copyright';
-import { ChangeSnippet } from './Change/ChangeSnippet';
 
 const apiUrl = import.meta.env.VITE_JSON_SERVER_URL;
 
@@ -87,13 +86,6 @@ export const Dashboard = () => {
                 </Grid>
               ))
             }
-          </Grid>
-          {/* Recent Changes */}
-          <Typography variant="h2" sx={{ fontSize: 32, fontWeight: 600, mb: 2 }}>Recent Changes</Typography>
-          <Grid container spacing={3} sx={{ mb: 4 }}>
-            <Grid item xs={12}>
-              <ChangeSnippet data={metrics.changes} />
-            </Grid>
           </Grid>
           <Copyright sx={{ pt: 4 }} />
         </Container>
