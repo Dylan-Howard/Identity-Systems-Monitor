@@ -43,8 +43,6 @@ public class LinkController
           var db = new PrognosisContext(settings);
           Console.WriteLine("Inserting a new link");
 
-          Console.WriteLine(addLink);
-
           await db.AddAsync(addLink);
           await db.SaveChangesAsync();
         }
@@ -164,14 +162,6 @@ public class LinkController
         try
         {
             var db = new PrognosisContext(settings);
-            
-            // Console.WriteLine($"ProfileId: {profileId}");
-            // Console.WriteLine($"Should be aa63ce8e-69a4-44eb-442e-08dcab4b3a62");
-
-            // Console.WriteLine($"ServiceId: {serviceId}");
-            // Console.WriteLine($"Should be 8cd563c4-b1f8-4c00-9990-8a3c9a190944");
-
-            // Console.WriteLine(serviceIdentifier);
 
             Link? link = await db.Links.FirstOrDefaultAsync(
                 (l) => l.ProfileId == profileId
