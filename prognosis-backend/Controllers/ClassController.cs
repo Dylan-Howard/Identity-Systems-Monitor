@@ -7,13 +7,10 @@ namespace prognosis_backend;
 
 public class ClassController
 {
-    public static async Task<List<Class>> FetchClassRecords(PrognosisConnectionSettings settings, int retryCount)
+    public static async Task<List<Class>> FetchClassRecords(PrognosisConnectionSettings settings)
     {
         List<Class> classes = [];
-        if (retryCount == 0) {
-            return classes;
-        }
-
+  
         try
         {
             var db = new PrognosisContext(settings);
@@ -21,23 +18,14 @@ public class ClassController
         }
         catch (SqlException e)
         {
-            if (e.Number == -2) {
-                Console.WriteLine("Connection timed out. Retrying...");
-                return await FetchClassRecords(settings, retryCount - 1);
-            } else {
-                Console.WriteLine(e.ToString());
-            }
+            Console.WriteLine(e.ToString());
         }
             
         return classes;
     }
 
-    public static async Task<bool> AddClassRecord(PrognosisConnectionSettings settings, Class addClass, int retryCount)
+    public static async Task<bool> AddClassRecord(PrognosisConnectionSettings settings, Class addClass)
     {
-        if (retryCount == 0) {
-            return false;
-        }
-
         try
         {
             var db = new PrognosisContext(settings);
@@ -46,13 +34,7 @@ public class ClassController
         }
         catch (SqlException e)
         {
-            if (e.Number == -2) {
-                Console.WriteLine("Connection timed out. Retrying...");
-                return await AddClassRecord(settings, addClass, retryCount - 1);
-            }
-
             Console.WriteLine(e.ToString());
-            
             return false;
         }
 
@@ -95,12 +77,8 @@ public class ClassController
             ChangedFields = changedFields
         };
     }
-    public static async Task<bool> UpdateClassRecord(PrognosisConnectionSettings settings, Class updateClass, int retryCount)
+    public static async Task<bool> UpdateClassRecord(PrognosisConnectionSettings settings, Class updateClass)
     {
-        if (retryCount == 0) {
-            return false;
-        }
-
         try
         {
             var db = new PrognosisContext(settings);
@@ -124,12 +102,7 @@ public class ClassController
         }
         catch (SqlException e)
         {
-            if (e.Number == -2) {
-                Console.WriteLine("Connection timed out. Retrying...");
-                return await UpdateClassRecord(settings, updateClass, retryCount - 1);
-            }
             Console.WriteLine(e.ToString());
-            Console.WriteLine(updateClass);
             return false;
         }
 

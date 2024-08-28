@@ -182,16 +182,16 @@ namespace prognosis_backend
             List<Link> links = await LinkController.FetchLinkRecords(settings, 3);
             List<Profile> profiles = await ProfilesController.FetchProfileRecords(settings, 3);
 
-            Console.WriteLine("Processing One Roster data");
+            Console.WriteLine("Processing One Roster users");
 
-            int totalRecords = 0;
+            int totalLinkRecords = 0;
             foreach (Link l in oneRosterLinks)
             {
                 /* Log progress */
-                totalRecords += 1;
-                if (totalRecords % _progressIncrement == 0)
+                totalLinkRecords += 1;
+                if (totalLinkRecords % _progressIncrement == 0)
                 {
-                    Console.WriteLine($"Processing {totalRecords} of {oneRosterLinks.Count}");
+                    Console.WriteLine($"Processing {totalLinkRecords} of {oneRosterLinks.Count}");
                 }
 
                 /* Match Link to Profile */
@@ -332,7 +332,7 @@ namespace prognosis_backend
             List<OneRosterClass> oneRosterClasses = await oneRosterConnection.FetchOneRosterClassesAsync();
             Console.WriteLine($"Received {oneRosterClasses.Count} classes.");
 
-            List<Class> classes = await ClassController.FetchClassRecords(settings, 3);
+            List<Class> classes = await ClassController.FetchClassRecords(settings);
             Console.WriteLine($"Referencing {classes.Count} current classes.");
 
             List<Org> orgs = await OrgController.FetchOrgRecords(settings, 3);
@@ -353,8 +353,17 @@ namespace prognosis_backend
             }
 
             /* Process OneRosterOrg records */
+            var totalClassRecords = 0;
+
             foreach (OneRosterClass c in oneRosterClasses)
             {
+                /* Log progress */
+                totalClassRecords += 1;
+                if (totalClassRecords % _progressIncrement == 0)
+                {
+                    Console.WriteLine($"Processing {totalClassRecords} of {oneRosterClasses.Count} classes");
+                }
+
                 Class? classRecord = c;
 
                 if (classRecord == null || classRecord.OrgSourcedId == Guid.Empty)
@@ -370,7 +379,7 @@ namespace prognosis_backend
                 classMap.TryGetValue(classRecord.Identifier, out classStatus);
                 if (classStatus == 0)
                 {
-                    bool addSuccess = await ClassController.AddClassRecord(settings, classRecord, 3);
+                    bool addSuccess = await ClassController.AddClassRecord(settings, classRecord);
 
                     if (!addSuccess)
                     {
@@ -382,7 +391,7 @@ namespace prognosis_backend
                 {
                     classMap[c.SourcedId] = 0;
 
-                    bool updateSuccess = await ClassController.UpdateClassRecord(settings, classRecord, 3);
+                    bool updateSuccess = await ClassController.UpdateClassRecord(settings, classRecord);
                     if (!updateSuccess)
                     {
                         Console.WriteLine($"Failed to update {classRecord.Identifier}.");
@@ -398,7 +407,7 @@ namespace prognosis_backend
                 {
                     c.Status = false;
 
-                    bool updateSuccess = await ClassController.UpdateClassRecord(settings, c, 3);
+                    bool updateSuccess = await ClassController.UpdateClassRecord(settings, c);
                     if (!updateSuccess)
                     {
                         Console.WriteLine($"Failed to update {c.Identifier}.");
@@ -415,7 +424,7 @@ namespace prognosis_backend
             Console.WriteLine($"Received {oneRosterEnrollments.Count} enrollments.");
 
             /* Setup class map */
-            List<Class> classes = await ClassController.FetchClassRecords(settings, 3);
+            List<Class> classes = await ClassController.FetchClassRecords(settings);
             Console.WriteLine($"Referencing {classes.Count} current classes.");
 
             var classMap = new Dictionary<string, Guid>();
@@ -442,7 +451,7 @@ namespace prognosis_backend
             }
             
             /* Setup enrollments map */
-            List<Enrollment> enrollments = await EnrollmentController.FetchEnrollmentRecords(settings, 3);
+            List<Enrollment> enrollments = await EnrollmentController.FetchEnrollmentRecords(settings);
             Console.WriteLine($"Referencing {enrollments.Count} current enrollments.");
 
             var enrollmentMap = new Dictionary<string, int>();
@@ -452,8 +461,17 @@ namespace prognosis_backend
             }
 
             /* Process OneRosterOrg records */
+            int totalEnrollmentRecords = 0;
+
             foreach (OneRosterEnrollment e in oneRosterEnrollments)
             {
+                /* Log progress */
+                totalEnrollmentRecords += 1;
+                if (totalEnrollmentRecords % _progressIncrement == 0)
+                {
+                    Console.WriteLine($"Processing {totalEnrollmentRecords} of {oneRosterEnrollments.Count} enrollments");
+                }
+
                 Enrollment? enrollmentRecord = e;
 
                 if (enrollmentRecord == null
@@ -492,7 +510,7 @@ namespace prognosis_backend
                 enrollmentMap.TryGetValue(enrollmentRecord.Identifier, out enrollmentStatus);
                 if (enrollmentStatus == 0)
                 {
-                    bool addSuccess = await EnrollmentController.AddEnrollmentRecord(settings, enrollmentRecord, 3);
+                    bool addSuccess = await EnrollmentController.AddEnrollmentRecord(settings, enrollmentRecord);
 
                     if (!addSuccess)
                     {
@@ -504,7 +522,7 @@ namespace prognosis_backend
                 {
                     enrollmentMap[e.SourcedId] = 0;
 
-                    bool updateSuccess = await EnrollmentController.UpdateEnrollmentRecord(settings, enrollmentRecord, 3);
+                    bool updateSuccess = await EnrollmentController.UpdateEnrollmentRecord(settings, enrollmentRecord);
                     if (!updateSuccess)
                     {
                         Console.WriteLine($"Failed to update {enrollmentRecord.Identifier}.");
@@ -520,7 +538,7 @@ namespace prognosis_backend
                 {
                     e.Status = false;
 
-                    bool updateSuccess = await EnrollmentController.UpdateEnrollmentRecord(settings, e, 3);
+                    bool updateSuccess = await EnrollmentController.UpdateEnrollmentRecord(settings, e);
                     if (!updateSuccess)
                     {
                         Console.WriteLine($"Failed to update {e.Identifier}.");

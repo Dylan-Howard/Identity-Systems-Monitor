@@ -7,13 +7,9 @@ namespace prognosis_backend;
 
 public class EnrollmentController
 {
-    public static async Task<List<Enrollment>> FetchEnrollmentRecords(PrognosisConnectionSettings settings, int retryCount)
+    public static async Task<List<Enrollment>> FetchEnrollmentRecords(PrognosisConnectionSettings settings)
     {
         List<Enrollment> enrollments = [];
-        if (retryCount == 0) {
-            return enrollments;
-        }
-
         try
         {
             var db = new PrognosisContext(settings);
@@ -21,23 +17,14 @@ public class EnrollmentController
         }
         catch (SqlException e)
         {
-            if (e.Number == -2) {
-                Console.WriteLine("Connection timed out. Retrying...");
-                return await FetchEnrollmentRecords(settings, retryCount - 1);
-            } else {
-                Console.WriteLine(e.ToString());
-            }
+            Console.WriteLine(e.ToString());
         }
             
         return enrollments;
     }
 
-    public static async Task<bool> AddEnrollmentRecord(PrognosisConnectionSettings settings, Enrollment addEnrollment, int retryCount)
+    public static async Task<bool> AddEnrollmentRecord(PrognosisConnectionSettings settings, Enrollment addEnrollment)
     {
-        if (retryCount == 0) {
-            return false;
-        }
-
         try
         {
             var db = new PrognosisContext(settings);
@@ -47,13 +34,7 @@ public class EnrollmentController
         }
         catch (SqlException e)
         {
-            if (e.Number == -2) {
-                Console.WriteLine("Connection timed out. Retrying...");
-                return await AddEnrollmentRecord(settings, addEnrollment, retryCount - 1);
-            }
-
             Console.WriteLine(e.ToString());
-            
             return false;
         }
 
@@ -100,12 +81,8 @@ public class EnrollmentController
             ChangedFields = changedFields
         };
     }
-    public static async Task<bool> UpdateEnrollmentRecord(PrognosisConnectionSettings settings, Enrollment updateEnrollment, int retryCount)
+    public static async Task<bool> UpdateEnrollmentRecord(PrognosisConnectionSettings settings, Enrollment updateEnrollment)
     {
-        if (retryCount == 0) {
-            return false;
-        }
-
         try
         {
             var db = new PrognosisContext(settings);
@@ -129,10 +106,6 @@ public class EnrollmentController
         }
         catch (SqlException e)
         {
-            if (e.Number == -2) {
-                Console.WriteLine("Connection timed out. Retrying...");
-                return await UpdateEnrollmentRecord(settings, updateEnrollment, retryCount - 1);
-            }
             Console.WriteLine(e.ToString());
             Console.WriteLine(updateEnrollment);
             return false;
