@@ -20,6 +20,6 @@ public class PrognosisContext : DbContext
     public DbSet<Class> Classes { get; set; } = default!;
     public DbSet<Enrollment> Enrollments { get; set; } = default!;
     public DbSet<Job> Jobs { get; set; } = default!;
-    public DbSet<Task> Tasks { get; set; } = default!;
+    public DbSet<Prognosis.Models.Task> Tasks { get; set; } = default!;
 
 }

@@ -19,7 +19,7 @@ public class Task
     public DateTime StartTime { get; set; }
     [Column("end_time")]
     [JsonPropertyName("endTime")]
-    public DateTime EndTime { get; set; }
+    public DateTime? EndTime { get; set; }
     [Column("notes")]
     [JsonPropertyName("notes")]
     public string? Notes { get; set; }
@@ -28,11 +28,19 @@ public class Task
     public bool Active { get; set; }
 }
 
+public class TaskListItem : Task
+{
+    [JsonPropertyName("serviceId")]
+    public required Guid ServiceId { get; set; }
+    [JsonPropertyName("serviceName")]
+    public required string ServiceName { get; set; }
+}
+
 public class TaskList
 {
     [Key]
     [JsonPropertyName("data")]
-    public required List<Task> Tasks { get; set; }
+    public required List<TaskListItem> Tasks { get; set; }
     [JsonPropertyName("total")]
     public int Total { get; set; }
 }

@@ -22,12 +22,116 @@ namespace prognosis.Controllers
 
         // GET: api/Tasks
         [HttpGet]
-        public async Task<ActionResult<TaskList>> GetTask()
+        public async Task<ActionResult<TaskList>> GetTask(int startIndex, int endIndex, string sort, string order, string? q, bool? active)
         {
+
             List<Prognosis.Models.Task> tasks = await _context.Tasks.ToListAsync();
+            List<Job> jobs = await _context.Jobs.ToListAsync();
+            List<Service> services = await _context.Services.ToListAsync();
+
+            List<TaskListItem> taskItems = [];
+
+            for (var i = 0; i < tasks.Count; i++)
+            {
+                var jobMatch = jobs.Find((j) => j.JobId == tasks[i].JobId);
+                if (jobMatch == null)
+                {
+                    continue;
+                }
+
+                var serviceMatch = services.Find((s) => s.ServiceId == jobMatch.ServiceId);
+                if (serviceMatch == null)
+                {
+                    continue;
+                }
+
+                taskItems.Add(new TaskListItem {
+                    TaskId = tasks[i].TaskId,
+                    JobId = tasks[i].TaskId,
+                    StartTime = tasks[i].StartTime,
+                    EndTime = tasks[i].EndTime,
+                    Notes = tasks[i].Notes,
+                    Active = tasks[i].Active,
+                    ServiceId = serviceMatch.ServiceId,
+                    ServiceName = serviceMatch.Name,
+                });
+            }
+
+            /* Handle filter*/
+            if (q != null)
+            {
+                taskItems = taskItems.FindAll((t) => t.ServiceName.StartsWith(q));
+            }
+            else if (active != null)
+            {
+                Console.WriteLine("Finding users by status");
+                taskItems = taskItems.FindAll((t) => t.Active == active);
+            }
+
+            /* Handle Sorting */
+            switch (sort)
+            {
+                case "serviceName":
+                    if (order == "DESC")
+                    {
+                        taskItems = taskItems.OrderByDescending((p) => p.ServiceName).ToList();
+                    }
+                    else
+                    {
+                        taskItems = taskItems.OrderBy((t) => t.ServiceName).ToList();
+                    }
+                    break;
+                case "startTime":
+                    if (order == "DESC")
+                    {
+                        taskItems = taskItems.OrderByDescending((t) => t.StartTime).ToList();
+                    }
+                    else
+                    {
+                        taskItems = taskItems.OrderBy((t) => t.StartTime).ToList();
+                    }
+                    break;
+                case "endTime":
+                    if (order == "DESC")
+                    {
+                        taskItems = taskItems.OrderByDescending((t) => t.EndTime).ToList();
+                    }
+                    else
+                    {
+                        taskItems = taskItems.OrderBy((t) => t.EndTime).ToList();
+                    }
+                    break;
+                case "notes":
+                    if (order == "DESC")
+                    {
+                        taskItems = taskItems.OrderByDescending((t) => t.Notes).ToList();
+                    }
+                    else
+                    {
+                        taskItems = taskItems.OrderBy((t) => t.Notes).ToList();
+                    }
+                    break;
+                case "active":
+                    if (order == "DESC")
+                    {
+                        taskItems = taskItems.OrderByDescending((t) => t.Active).ToList();
+                    }
+                    else
+                    {
+                        taskItems = taskItems.OrderBy((t) => t.Active).ToList();
+                    }
+                    break;
+            }
+
+            /* Handle array slicing */
+            if (endIndex == 0)
+            {
+              endIndex = startIndex + 10;
+            }
+            
             return new TaskList {
-              Tasks = tasks,
-              Total = tasks.Count,
+              Tasks = taskItems.GetRange(startIndex, Math.Min(endIndex, taskItems.Count) - startIndex),
+              Total = taskItems.Count,
             };
         }
 
