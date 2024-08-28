@@ -47,7 +47,12 @@ namespace prognosis.Controllers
                 FormattableString trendsQuery = $"SELECT TOP(30) [timestamp] AS [name], [count] FROM dbo.[total] WHERE [service_id] = '{s.ServiceId}'";
                 IList<Total> serviceTotals = await _context.Totals.Where((t) => t.ServiceId == s.ServiceId)
                                                                   .OrderBy((t) => t.Timestamp)
+                                                                  .Take(30)
                                                                   .ToListAsync();
+                // IList<Total> serviceTotals = trendsQuery.Take(30).Where((t) => t.ServiceId == s.ServiceId)
+                //                                                   .OrderBy((t) => t.Timestamp)
+                //                                                   .ToListAsync();
+
                 IList<DashboardTrendDataPoint> points = [];
 
                 foreach (Total t in serviceTotals)
