@@ -14,8 +14,7 @@ builder.Services.AddCors(options =>
                       builder =>
                       {
                           builder
-                            .WithOrigins("http://localhost:5173") // specifying the allowed origin
-                            // .AllowAnyOrigin()
+                            .AllowAnyOrigin()
                             .WithMethods("GET") // defining the allowed HTTP method
                             .AllowAnyHeader(); // allowing any header to be sent
                       });
@@ -40,7 +39,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 
 app.UseCors(policyName);
 
