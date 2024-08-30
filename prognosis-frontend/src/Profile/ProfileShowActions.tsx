@@ -1,9 +1,13 @@
 import { useState } from 'react';
 import { useRecordContext, useShowContext } from 'react-admin';
-// import './UserShow.css';
 import { fetchData } from '../DataFetcher/DataFetcher';
 import {
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Menu,
   MenuItem,
   Snackbar,
@@ -23,6 +27,8 @@ export const ProfileShowActions = () => {
     message: '',
     data: '',
   });
+
+  const [ dialog, setDialog ] = useState({ body: '', active: false });
   
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -64,6 +70,19 @@ export const ProfileShowActions = () => {
               + "Dylan Howard"
             ),
           });
+
+        setDialog({
+          body: (
+            "Hi there!\n\n"
+            + `I've set this user's password to ${json.data.password}\n\n`
+            + `Could you verify that they are able to sign in and have access to everything that they need?\n\n`
+            + "Additionally, could you please assist them in completing their challenge questions and recording these answers in a secure location?\n\n"
+            + "They may change their password using these instructions (https://warrencounty.incidentiq.com/kb/articles/b014ef89-9b34-409c-9f25-56faa317f5bb) and update their security questions using these instructions (https://warrencounty.incidentiq.com/kb/articles/13b5e7be-944b-466c-9456-a409e37d993e).\n\n"
+            + "Thank you!\n\n"
+            + "Dylan Howard"
+          ),
+          active: false,
+        });
         }
         if (action === 'welcome') {
           setSnackbar({
@@ -102,9 +121,15 @@ export const ProfileShowActions = () => {
     })
   }
 
-  const copySnackbarToClipboard = () => {
-    navigator.clipboard.writeText(snackbar.data);
+  const showSnackbarMessage = () => {
+    setDialog({ ...dialog, active: true });
   }
+
+  const handleDialogClose = () => setDialog({ body: '', active: false });
+
+  // const copySnackbarToClipboard = () => {
+  //   navigator.clipboard.writeText(snackbar.data);
+  // }
 
   if (isLoading) { return null };
   return (
@@ -137,6 +162,22 @@ export const ProfileShowActions = () => {
         <MenuItem onClick={() => handleActionClick('welcome')}>Send Welcome Email</MenuItem>
         <MenuItem onClick={() => handleActionClick('rename')}>Rename Now</MenuItem>
       </Menu>
+      <Dialog
+        open={dialog.active}
+        onClose={handleDialogClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Use Google's location service?"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">{dialog.body}</DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="outlined" onClick={handleDialogClose} autoFocus>Okay</Button>
+        </DialogActions>
+      </Dialog>
       <Snackbar
         open={snackbar.open}
         autoHideDuration={3000}
@@ -144,7 +185,7 @@ export const ProfileShowActions = () => {
         message={snackbar.message}
         action={
           snackbar.allowCopy
-            ? <Button color="primary" size="small" onClick={copySnackbarToClipboard}>Copy</Button>
+            ? <Button color="primary" size="small" onClick={showSnackbarMessage}>Show Details</Button>
             : null
         }
       />

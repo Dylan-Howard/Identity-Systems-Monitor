@@ -6,7 +6,8 @@ import {
   Fade,
   Snackbar,
 } from "@mui/material";
-import { useState, useRef } from 'react';
+
+import { useState } from 'react';
 import { fetchData } from '../DataFetcher/DataFetcher';
 
 const apiUrl = import.meta.env.VITE_ACTION_SERVER_URL;
@@ -15,7 +16,7 @@ export const ProfileShowCardActions = ({ system } : {system: string}) => {
   const record = useRecordContext();
   const { isLoading } = useShowContext();
   const [ isActing, setIsActing ] = useState(false);
-  const [ snackbar, setSnackbar] = useState({
+  const [ snackbar, setSnackbar ] = useState({
     open: false,
     allowCopy: false,
     message: '',
@@ -42,7 +43,6 @@ export const ProfileShowCardActions = ({ system } : {system: string}) => {
           setIsActing(false);
           return;
         }
-
         setSnackbar({
           open: true,
           allowCopy: false,
@@ -81,7 +81,6 @@ export const ProfileShowCardActions = ({ system } : {system: string}) => {
         onClick={() => handleActionClick()}
       >
         {
-
           isActing
             ? (
                 <Fade
@@ -102,11 +101,6 @@ export const ProfileShowCardActions = ({ system } : {system: string}) => {
         autoHideDuration={3000}
         onClose={handleSnackbarClose}
         message={snackbar.message}
-        action={
-          snackbar.allowCopy
-            ? <Button color="primary" size="small" onClick={copySnackbarToClipboard}>Copy</Button>
-            : null
-        }
       />
     </Box>
   )

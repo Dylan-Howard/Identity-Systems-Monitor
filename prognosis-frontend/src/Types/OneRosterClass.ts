@@ -4,8 +4,8 @@ export type ClassEnrollment = {
   username: string,
   role: string,
   primary: boolean,
-  beginDate: Date,
-  endDate: Date,
+  beginDate: string,
+  endDate: string,
 };
 
 type OneRosterClass = {
