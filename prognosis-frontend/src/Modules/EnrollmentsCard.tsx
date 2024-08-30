@@ -46,8 +46,8 @@ export const EnrollmentsCard = ({ enrollments, role } : { enrollments: ClassEnro
               <TableCell>
                 { `${primary ? 'Primary ' : ''}${role}` }
               </TableCell>
-              <TableCell>{beginDate?.toLocaleDateString() || 'None'}</TableCell>
-              <TableCell>{endDate?.toLocaleDateString() || 'None'}</TableCell>
+              <TableCell>{beginDate || 'None'}</TableCell>
+              <TableCell>{endDate || 'None'}</TableCell>
             </TableRow>
           ))}
         </TableBody>
