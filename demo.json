@@ -1,0 +1,97 @@
+{
+  "services": [
+    {
+      "id": "1",
+      "name": "Rapid Identity",
+      "serviceType": "IdAuto",
+      "username": "",
+      "password": "",
+      "baseUrl": "",
+      "tokenUrl": ""
+    },
+    {
+      "id": "2",
+      "name": "Google Workspace",
+      "serviceType": "Google",
+      "username": "",
+      "password": "",
+      "baseUrl": "",
+      "tokenUrl": ""
+    },
+    {
+      "id": "3",
+      "name": "Infinite Campus",
+      "serviceType": "OneRoster",
+      "username": "",
+      "password": "",
+      "baseUrl": "",
+      "tokenUrl": ""
+    },
+    {
+      "id": "4",
+      "name": "Microsoft Entra Id",
+      "serviceType": "Entra",
+      "username": "",
+      "password": "",
+      "baseUrl": "",
+      "tokenUrl": ""
+    }
+  ],
+  "jobs": [
+    {
+      "id": "1",
+      "serviceId": "1",
+      "startDate": "2024-07-01 17:00:00",
+      "nextRuntime": "2024-07-01 17:00:00",
+      "frequency": "60",
+      "active": true
+    },
+    {
+      "id": "2",
+      "serviceId": "3",
+      "startDate": "2024-07-01 17:00:00",
+      "nextRuntime": "2024-07-01 17:00:00",
+      "frequency": "60",
+      "active": true
+    },
+    {
+      "id": "3",
+      "serviceId": "3",
+      "startDate": "2024-07-01 17:00:00",
+      "nextRuntime": "2024-07-01 17:00:00",
+      "frequency": "60",
+      "active": true
+    },
+    {
+      "id": "4",
+      "serviceId": "4",
+      "startDate": "2024-07-01 17:00:00",
+      "nextRuntime": "2024-07-01 17:00:00",
+      "frequency": "60",
+      "active": true
+    }
+  ],
+  "totals": [
+    {
+      "id": "1",
+      "serviceId": "1",
+      "count": "",
+      "timestamp": ""
+    }
+  ],
+  "profiles": [
+
+  ],
+  "links": [
+    
+  ],
+  "orgs": [
+
+  ],
+  "classes": [
+
+  ],
+  "enrollments": [
+
+  ]
+}
