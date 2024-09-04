@@ -6,17 +6,71 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   Menu,
   MenuItem,
   Snackbar,
   Stack,
+  Typography,
 } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { FormDialog } from '../Modules/UserDialogue';
 
 const apiUrl = import.meta.env.VITE_ACTION_SERVER_URL;
+
+const ActionDialog = (
+  {
+    active,
+    title,
+    body,
+    onCopy,
+    onClose,
+  } : {
+    active: boolean,
+    title: string,
+    body: string,
+    onCopy: any,
+    onClose: any,
+  }
+) => {
+
+  const isSecureContext = navigator.clipboard !== undefined;
+
+  return (
+    <Dialog
+      open={active}
+      onClose={onClose}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+    >
+      <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
+      <DialogContent id="alert-dialog-description">
+        {
+          body !== undefined
+          ?
+            body.split('\n').map((line) => (
+              <Typography
+                key={line.substring(0, 10)}
+                component="p"
+                variant="body1"
+                gutterBottom
+              >
+                  { line }
+              </Typography>
+            ))
+          : ''
+        }
+      </DialogContent>
+      <DialogActions>
+        { isSecureContext
+            ? <Button variant="contained" onClick={onCopy} autoFocus>Copy</Button>
+            : ''
+        }
+        <Button variant="outlined" onClick={onClose} autoFocus={!isSecureContext}>Okay</Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
 
 export const ProfileShowActions = () => {
   const record = useRecordContext();
@@ -61,24 +115,24 @@ export const ProfileShowActions = () => {
             allowCopy: true,
             message: `Password set to: ${json.data.password}`,
             data: (
-              "Hi there!\n\n"
-              + `I've set this user's password to ${json.data.password}\n\n`
-              + `Could you verify that they are able to sign in and have access to everything that they need?\n\n`
-              + "Additionally, could you please assist them in completing their challenge questions and recording these answers in a secure location?\n\n"
-              + "They may change their password using these instructions (https://warrencounty.incidentiq.com/kb/articles/b014ef89-9b34-409c-9f25-56faa317f5bb) and update their security questions using these instructions (https://warrencounty.incidentiq.com/kb/articles/13b5e7be-944b-466c-9456-a409e37d993e).\n\n"
-              + "Thank you!\n\n"
+              "Hi there!\n"
+              + `I've set this user's password to ${json.data.password}\n`
+              + `Could you verify that they are able to sign in and have access to everything that they need?\n`
+              + "Additionally, could you please assist them in completing their challenge questions and recording these answers in a secure location?\n"
+              + "They may change their password using <a href=\"https://warrencounty.incidentiq.com/kb/articles/b014ef89-9b34-409c-9f25-56faa317f5bb\">these instructions</a> (https://warrencounty.incidentiq.com/kb/articles/b014ef89-9b34-409c-9f25-56faa317f5bb) and update their security questions using <a href=\"https://warrencounty.incidentiq.com/kb/articles/13b5e7be-944b-466c-9456-a409e37d993e\" >these instructions</a> (https://warrencounty.incidentiq.com/kb/articles/13b5e7be-944b-466c-9456-a409e37d993e).\n"
+              + "Thank you!\n"
               + "Dylan Howard"
             ),
           });
 
         setDialog({
           body: (
-            "Hi there!\n\n"
-            + `I've set this user's password to ${json.data.password}\n\n`
-            + `Could you verify that they are able to sign in and have access to everything that they need?\n\n`
-            + "Additionally, could you please assist them in completing their challenge questions and recording these answers in a secure location?\n\n"
-            + "They may change their password using these instructions (https://warrencounty.incidentiq.com/kb/articles/b014ef89-9b34-409c-9f25-56faa317f5bb) and update their security questions using these instructions (https://warrencounty.incidentiq.com/kb/articles/13b5e7be-944b-466c-9456-a409e37d993e).\n\n"
-            + "Thank you!\n\n"
+            "Hi there!\n"
+            + `I've set this user's password to ${json.data.password}\n`
+            + `Could you verify that they are able to sign in and have access to everything that they need?\n`
+            + "Additionally, could you please assist them in completing their challenge questions and recording these answers in a secure location?\n"
+            + "They may change their password using these instructions (https://warrencounty.incidentiq.com/kb/articles/b014ef89-9b34-409c-9f25-56faa317f5bb) and update their security questions using these instructions (https://warrencounty.incidentiq.com/kb/articles/13b5e7be-944b-466c-9456-a409e37d993e).\n"
+            + "Thank you!\n"
             + "Dylan Howard"
           ),
           active: false,
@@ -127,9 +181,9 @@ export const ProfileShowActions = () => {
 
   const handleDialogClose = () => setDialog({ body: '', active: false });
 
-  // const copySnackbarToClipboard = () => {
-  //   navigator.clipboard.writeText(snackbar.data);
-  // }
+  const handleDialogCopy = () => {
+    navigator.clipboard.writeText(snackbar.data);
+  }
 
   if (isLoading) { return null };
   return (
@@ -162,22 +216,13 @@ export const ProfileShowActions = () => {
         <MenuItem onClick={() => handleActionClick('welcome')}>Send Welcome Email</MenuItem>
         <MenuItem onClick={() => handleActionClick('rename')}>Rename Now</MenuItem>
       </Menu>
-      <Dialog
-        open={dialog.active}
+      <ActionDialog
+        active={dialog.active}
+        title="Updated User Account"
+        body={dialog.body}
+        onCopy={handleDialogCopy}
         onClose={handleDialogClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          {"Use Google's location service?"}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">{dialog.body}</DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button variant="outlined" onClick={handleDialogClose} autoFocus>Okay</Button>
-        </DialogActions>
-      </Dialog>
+      />
       <Snackbar
         open={snackbar.open}
         autoHideDuration={3000}
