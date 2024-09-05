@@ -48,7 +48,7 @@ export const OneRosterClassLayout = () => {
   return (
   <ShowBase>
     <SimpleShowLayout>
-      <Container maxWidth="xl">
+      <Container maxWidth="lg">
         <Box sx={{ mb: 2 }}>
           <ProBreadcrumbs parts={['classes', record.title.toString()]}/>
         </Box>

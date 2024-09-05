@@ -23,6 +23,9 @@ import { OneRosterClass } from './OneRosterClass/OneRosterClassShow';
 import { OrganizationList } from './Organization/OrganizationList';
 import { OneRosterClassList } from './OneRosterClass/OneRosterClassList';
 import ServiceCreate from './Service/ServiceCreate';
+import { ServiceShow } from './Service/ServiceShow';
+import { JobShow } from './Job/JobShow';
+import { TaskShow } from './Task/TaskShow';
 
 export const App = () => (
   <Admin
@@ -38,7 +41,7 @@ export const App = () => (
       name="services"
       create={ServiceCreate}
       list={ServiceList}
-      show={ShowGuesser}
+      show={ServiceShow}
       icon={CloudIcon}
     />
     <Resource
@@ -63,13 +66,13 @@ export const App = () => (
       name="jobs"
       create={JobCreate}
       list={JobList}
-      show={ShowGuesser}
+      show={JobShow}
       icon={WorkIcon}
     />
     <Resource
       name="tasks"
       list={TaskList}
-      show={ShowGuesser}
+      show={TaskShow}
       icon={TaskIcon}
     />
     <Resource

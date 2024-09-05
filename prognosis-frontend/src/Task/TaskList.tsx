@@ -6,7 +6,9 @@ import {
   TextField,
   SearchInput,
 } from 'react-admin';
+import Container from '@mui/material/Container';
 import QuickFilter from '../Modules/QuickFilter';
+import { Copyright } from '../Modules/Copyright';
 
 const taskFilters = [
   <SearchInput source="q" alwaysOn
@@ -20,13 +22,16 @@ const taskFilters = [
 ];
 
 export const TaskList = () => (
-  <List filters={taskFilters} >
-    <Datagrid rowClick="show">
-      <TextField source="serviceName" />
-      <DateField source="startTime" />
-      <DateField source="endTime" />
-      <TextField source="notes" />
-      <BooleanField source="active" />
-    </Datagrid>
-  </List>
+  <Container>
+    <List filters={taskFilters} >
+      <Datagrid rowClick="show">
+        <TextField source="serviceName" />
+        <DateField source="startTime" />
+        <DateField source="endTime" />
+        <TextField source="notes" />
+        <BooleanField source="active" />
+      </Datagrid>
+    </List>
+    <Copyright />
+  </Container>
 );

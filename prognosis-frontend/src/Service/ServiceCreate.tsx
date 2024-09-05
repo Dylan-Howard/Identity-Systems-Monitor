@@ -10,6 +10,7 @@ import {
 } from 'react-admin';
 import { Box, Container, Typography } from '@mui/material';
 import { ProBreadcrumbs } from '../Modules/ProBreadcrumbs';
+import { Copyright } from '../Modules/Copyright';
 
 const typeChoices = [
   { id: 'oneroster', name: 'One Roster' },
@@ -34,6 +35,7 @@ export const ServiceCreate = () => (
         <TextInput source="tokenUrl" />
       </SimpleForm>
     </Create>
+    <Copyright />
   </Container>
 );
 

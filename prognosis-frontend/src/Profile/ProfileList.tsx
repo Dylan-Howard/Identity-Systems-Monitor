@@ -10,6 +10,7 @@ import {
 } from 'react-admin';
 import QuickFilter from '../Modules/QuickFilter';
 import Container from '@mui/material/Container';
+import { Copyright } from '../Modules/Copyright';
 
 const profileFilters = [
   <SearchInput source="q" alwaysOn />,
@@ -20,7 +21,7 @@ const profileFilters = [
 ];
 
 export const ProfileList = () => (
-  <Container maxWidth="xl">
+  <Container maxWidth="lg">
     <List filters={profileFilters}>
       <Datagrid rowClick="show">
         <EmailField source="email" label="Email" />
@@ -32,5 +33,6 @@ export const ProfileList = () => (
         <TextField source="mfaMethod" label="Mfa Method" />
       </Datagrid>
     </List>
+    <Copyright />
   </Container>
 );

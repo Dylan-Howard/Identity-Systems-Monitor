@@ -97,7 +97,7 @@ const ProfileShowLayout = () => {
   return (
     <ShowBase>
       <SimpleShowLayout className="UserShow">
-        <Container maxWidth="xl">
+        <Container maxWidth="lg">
           <Box sx={{ mb: 2 }}>
             <ProBreadcrumbs parts={['profiles', record.email.toString()]}/>
           </Box>

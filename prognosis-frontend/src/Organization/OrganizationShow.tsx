@@ -1,8 +1,6 @@
 import {
-  BooleanField,
   DateField,
   Labeled,
-  Show,
   ShowBase,
   SimpleShowLayout,
   TextField,
@@ -12,10 +10,8 @@ import {
 import {
   Box,
   Card,
-  Chip,
   Container,
   Grid,
-  Stack,
   Typography,
 } from '@mui/material';
 import { ProBreadcrumbs } from '../Modules/ProBreadcrumbs';
@@ -43,7 +39,7 @@ export const OrganizationShowLayout = () => {
   return (
   <ShowBase>
     <SimpleShowLayout>
-      <Container maxWidth="xl">
+      <Container maxWidth="lg">
         <Box sx={{ mb: 2 }}>
           <ProBreadcrumbs parts={['organizations', record.name.toString()]}/>
         </Box>

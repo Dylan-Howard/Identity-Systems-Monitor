@@ -10,6 +10,7 @@ import {
 } from 'react-admin';
 import { Box, Container, Typography } from '@mui/material';
 import { ProBreadcrumbs } from '../Modules/ProBreadcrumbs';
+import { Copyright } from '../Modules/Copyright';
 
 const serviceChoices = [
   { id: '1a85c3f5-5392-476e-ac43-2c7d2422dee0', name: 'Microsoft Active Directory' },
@@ -19,7 +20,7 @@ const serviceChoices = [
 ]
 
 export const JobCreate = () => (
-  <Container maxWidth="xl" sx={{ mt: 2 }}>
+  <Container maxWidth="lg" sx={{ mt: 2 }}>
     <Box sx={{ mb: 2 }}>
       <ProBreadcrumbs parts={['jobs', 'New Scheduled Job']}/>
     </Box>
@@ -33,6 +34,7 @@ export const JobCreate = () => (
         <BooleanInput source="active"></BooleanInput>
       </SimpleForm>
     </Create>
+    <Copyright />
   </Container>
 );
 // {
