@@ -125,25 +125,66 @@ export const ProfileShowActions = () => {
             ),
           });
 
-        setDialog({
-          body: (
-            "Hi there!\n"
-            + `I've set this user's password to ${json.data.password}\n`
-            + `Could you verify that they are able to sign in and have access to everything that they need?\n`
-            + "Additionally, could you please assist them in completing their challenge questions and recording these answers in a secure location?\n"
-            + "They may change their password using these instructions (https://warrencounty.incidentiq.com/kb/articles/b014ef89-9b34-409c-9f25-56faa317f5bb) and update their security questions using these instructions (https://warrencounty.incidentiq.com/kb/articles/13b5e7be-944b-466c-9456-a409e37d993e).\n"
-            + "Thank you!\n"
-            + "Dylan Howard"
-          ),
-          active: false,
-        });
+          setDialog({
+            body: (
+              "Hi there!\n"
+              + `I've set this user's password to ${json.data.password}\n`
+              + `Could you verify that they are able to sign in and have access to everything that they need?\n`
+              + "Additionally, could you please assist them in completing their challenge questions and recording these answers in a secure location?\n"
+              + "They may change their password using <a href=\"https://warrencounty.incidentiq.com/kb/articles/b014ef89-9b34-409c-9f25-56faa317f5bb\">these instructions</a> (https://warrencounty.incidentiq.com/kb/articles/b014ef89-9b34-409c-9f25-56faa317f5bb) and update their security questions using <a href=\"https://warrencounty.incidentiq.com/kb/articles/13b5e7be-944b-466c-9456-a409e37d993e\" >these instructions</a> (https://warrencounty.incidentiq.com/kb/articles/13b5e7be-944b-466c-9456-a409e37d993e).\n"
+              + "Thank you!\n"
+              + "Dylan Howard"
+            ),
+            active: false,
+          });
+        }
+        if (action === 'newpassword-hr') {
+          setSnackbar({
+            open: true,
+            allowCopy: true,
+            message: `Password set to: ${json.data.password}`,
+            data: (
+              "Hi there!\n"
+              + `I've set this user's password to ${json.data.password}\n`
+              + "They may change their password using <a href=\"https://warrencounty.incidentiq.com/kb/articles/b014ef89-9b34-409c-9f25-56faa317f5bb\">these instructions</a> (https://warrencounty.incidentiq.com/kb/articles/b014ef89-9b34-409c-9f25-56faa317f5bb) and update their security questions using <a href=\"https://warrencounty.incidentiq.com/kb/articles/13b5e7be-944b-466c-9456-a409e37d993e\" >these instructions</a> (https://warrencounty.incidentiq.com/kb/articles/13b5e7be-944b-466c-9456-a409e37d993e).\n"
+              + "Thank you!\n"
+              + "Dylan Howard"
+            ),
+          });
+
+          setDialog({
+            body: (
+              "Hi there!\n"
+              + `I've set this user's password to ${json.data.password}\n`
+              + "They may change their password using <a href=\"https://warrencounty.incidentiq.com/kb/articles/b014ef89-9b34-409c-9f25-56faa317f5bb\">these instructions</a> (https://warrencounty.incidentiq.com/kb/articles/b014ef89-9b34-409c-9f25-56faa317f5bb) and update their security questions using <a href=\"https://warrencounty.incidentiq.com/kb/articles/13b5e7be-944b-466c-9456-a409e37d993e\" >these instructions</a> (https://warrencounty.incidentiq.com/kb/articles/13b5e7be-944b-466c-9456-a409e37d993e).\n"
+              + "Thank you!\n"
+              + "Dylan Howard"
+            ),
+            active: false,
+          });
         }
         if (action === 'welcome') {
           setSnackbar({
             open: true,
             allowCopy: true,
             message: json.message,
-            data: json.data.recipient,
+            data: (
+              "Hi there!\n"
+              + `I've set this user's password to ${json.data.password}\n`
+              + "I've triggered our system to resend your Welcome Email. You should be able to follow these instructions to claim your account and update their password. When you're able, could you please confirm that you're able to access your account?\n"
+              + "Thank you!\n"
+              + "Dylan Howard"
+            ),
+          });
+          setDialog({
+            body: (
+              "Hi there!\n"
+              + `I've set this user's password to ${json.data.password}\n`
+              + "I've triggered our system to resend your Welcome Email. You should be able to follow these instructions to claim your account and update their password. When you're able, could you please confirm that you're able to access your account?\n"
+              + "Thank you!\n"
+              + "Dylan Howard"
+            ),
+            active: false,
           });
         }
         if (action === 'rename') {
@@ -213,6 +254,7 @@ export const ProfileShowActions = () => {
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
         <MenuItem onClick={() => handleActionClick('newpassword')}>Generate Password</MenuItem>
+        <MenuItem onClick={() => handleActionClick('newpassword')}>Generate Password (HR)</MenuItem>
         <MenuItem onClick={() => handleActionClick('welcome')}>Send Welcome Email</MenuItem>
         <MenuItem onClick={() => handleActionClick('rename')}>Rename Now</MenuItem>
       </Menu>
