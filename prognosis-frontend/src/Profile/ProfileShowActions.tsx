@@ -179,7 +179,6 @@ export const ProfileShowActions = () => {
           setDialog({
             body: (
               "Hi there!\n"
-              + `I've set this user's password to ${json.data.password}\n`
               + "I've triggered our system to resend your Welcome Email. You should be able to follow these instructions to claim your account and update their password. When you're able, could you please confirm that you're able to access your account?\n"
               + "Thank you!\n"
               + "Dylan Howard"
